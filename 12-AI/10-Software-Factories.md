@@ -47,13 +47,13 @@ The traditional software engineering model is economically and operationally con
 An AI Software Factory is not a single tool, but a unified pipeline bridging AI agents with traditional DevSecOps infrastructure.
 
 ```text
-    ┌────────────────┐       ┌────────────────┐       ┌────────────────┐
-    │ 1. Ingestion   │       │ 2. Design      │       │ 3. Implementation
-    │ -----------------│       │ -----------------│       │ -----------------│
-    │ • PRDs / Docs  │──────▶│ • Spec Agent   │──────▶│ • Coder Agent  │
-    │ • Figma Designs│       │ • Architect AI │       │ • DB Config AI │
-    │ • User Stories │       │ • Schema Gen   │       │ • API Gen AI   │
-    └────────────────┘       └────────┬───────┘       └────────┬───────┘
+    ┌────────────────┐       ┌────────────────┐       ┌──────────────────┐
+    │ 1. Ingestion   │       │ 2. Design      │       │ 3. Implementation│
+    │ ---------------│       │ ---------------│       │ -----------------│
+    │ • PRDs / Docs  │──────▶│ • Spec Agent   │─────▶│ • Coder Agent    │
+    │ • Figma Designs│       │ • Architect AI │       │ • DB Config AI   │
+    │ • User Stories │       │ • Schema Gen   │       │ • API Gen AI     │
+    └────────────────┘       └────────┬───────┘       └────────┬─────────┘
                                       │                        │
     ┌─────────────────────────────────▼────────────────────────▼───────┐
     │                     4. Secure Sandboxed Execution                │
@@ -63,8 +63,8 @@ An AI Software Factory is not a single tool, but a unified pipeline bridging AI 
                                       │
     ┌────────────────┐       ┌────────▼───────┐       ┌────────────────┐
     │ 7. Deployment  │       │ 6. Human Review│       │ 5. Verification│
-    │ -----------------│       │ -----------------│       │ -----------------│
-    │ • CI/CD Merge  │◀──────│ • Code Review  │◀──────│ • QA Agent     │
+    │ ---------------│       │ ---------------│       │ ---------------│
+    │ • CI/CD Merge  │◀─────│ • Code Review  │◀──────│ • QA Agent     │
     │ • K8s Rollout  │       │ • UX Audit     │       │ • SecOps Scan  │
     │ • Observability│       │ • Merge to Main│       │ • Test Runner  │
     └────────────────┘       └────────────────┘       └────────────────┘

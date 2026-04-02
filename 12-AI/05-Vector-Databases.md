@@ -51,7 +51,7 @@ Vector Databases act as the deterministic semantic engine that feeds precise con
 ```text
     ┌─────────────┐       ┌─────────────┐       ┌────────────────────────┐
     │ User Query  │       │ Multi-Modal │       │   Hybrid Vector DB     │
-    │  (Text/Img) │──────▶│ Embed Model │──────▶│   (DiskANN / HNSW)     │
+    │  (Text/Img) │─────▶│ Embed Model │──────▶│   (DiskANN / HNSW)     │
     └─────────────┘       └──────┬──────┘       └──────────┬─────────────┘
                                  │                         │
                                  │ Query Vector            │ Hybrid Return:

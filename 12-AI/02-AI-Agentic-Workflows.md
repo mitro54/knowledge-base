@@ -51,7 +51,7 @@ Modern agents abandon the unpredictable "One-Shot" recursive loop in favor of ex
 ```text
     ┌────────────────┐      ┌────────────────┐      ┌────────────────┐
     │ User Objective │      │ System 2 Plan  │      │ Tool Execution │
-    │ (Goal Prompt)  │─────▶│ (Drafting DAG) │─────▶│ (Wasm Sandbox) │
+    │ (Goal Prompt)  │────▶│ (Drafting DAG) │─────▶│ (Wasm Sandbox) │
     └────────────────┘      └────────────────┘      └──────┬─────────┘
             ▲                       ▲                      │
             │                       │ State:               │ Result:
@@ -68,7 +68,7 @@ Instead of one monolithic "God Agent" attempting to do everything, modern archit
 ```text
     ┌───────────────┐       ┌───────────────┐       ┌───────────────┐
     │  Orchestrator │       │ Frontend Coder│       │ UX QA Agent   │
-    │  (GPT-5)      │──────▶│ (Claude 4)    │──────▶│ (Gemini 2.5)  │
+    │  (GPT-5)      │─────▶│ (Claude 4)    │──────▶│ (Gemini 2.5)  │
     └───────────────┘       └──────┬────────┘       └──────┬────────┘
             ▲                      │                       │
             │                      ▼                       ▼
