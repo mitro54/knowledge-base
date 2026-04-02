@@ -99,8 +99,8 @@ A comprehensive markdown-based knowledge base covering all known useful coding p
 
 This knowledge base follows a modular design with:
 
-- **11 Categories** covering different aspects of software engineering
-- **55 Content Files** each following an 8-section template
+- **12 Categories** covering different aspects of software engineering
+- **67 Content Files** each following an 8-section template
 - **Cross-References** enabling knowledge discovery between related concepts
 - **Progressive Disclosure** from basic to advanced concepts
 
