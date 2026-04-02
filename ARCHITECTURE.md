@@ -75,11 +75,17 @@ This knowledge base is a modular, cross-referenced documentation system covering
 │   ├── 04-Metrics.md
 │   └── 05-Alerting.md
 └── 11-DevOps/                                  # 5 files - DevOps practices
-    ├── 01-CI-CD.md
-    ├── 02-Deployment-Strategies.md
-    ├── 03-Config-Management.md
-    ├── 04-Feature-Flags.md
-    └── 05-Release-Management.md
+│   ├── 01-CI-CD.md
+│   ├── 02-Deployment-Strategies.md
+│   ├── 03-Config-Management.md
+│   ├── 04-Feature-Flags.md
+│   └── 05-Release-Management.md
+└── 12-AI/                                      # 5 files - AI engineering
+    ├── 01-LLM-Architecture.md
+    ├── 02-AI-Agentic-Workflows.md
+    ├── 03-MLOps-Pipeline.md
+    ├── 04-AI-Evaluations.md
+    └── 05-Vector-Databases.md
 ```
 
 ## 📊 File Statistics
@@ -97,9 +103,10 @@ This knowledge base is a modular, cross-referenced documentation system covering
 | Infrastructure | 5 | 01-05 |
 | Observability | 5 | 01-05 |
 | DevOps | 5 | 01-05 |
-| **Content Files** | **55** | |
+| AI | 5 | 01-05 |
+| **Content Files** | **60** | |
 | **Root Files** | **2** | README.md, ARCHITECTURE.md |
-| **Total** | **57** | |
+| **Total** | **62** | |
 
 ## 📐 Content Structure Template
 
@@ -166,6 +173,7 @@ Categories are ordered to support progressive learning:
 | Engineering | 05-Safety-Engineering, 06-Testing-Engineering, 07-Distributed-Systems | Robust system design |
 | Infrastructure | 08-Database-Design, 09-Infrastructure, 10-Observability | Deployment and monitoring |
 | Operations | 11-DevOps | Automation and delivery |
+| Advanced AI | 12-AI | AI engineering and optimization |
 
 ## 🏗️ Design Principles
 
@@ -194,7 +202,7 @@ Categories are ordered to support progressive learning:
 ### Learning Paths
 1. **Architectural Path**: System-Design → Design-Patterns → Distributed-Systems
 2. **Engineering Path**: Best-Practices → Safety-Engineering → Testing-Engineering
-3. **Infrastructure Path**: Database-Design → Infrastructure → Observability → DevOps
+3. **Infrastructure Path**: Database-Design → Infrastructure → Observability → DevOps → AI
 
 ## 📝 Naming Conventions
 
@@ -221,9 +229,9 @@ Categories are ordered to support progressive learning:
 ```
 
 ### Validation Criteria
-1. **File Count**: Exactly 57 .md files (2 root + 55 content)
+1. **File Count**: Exactly 62 .md files (2 root + 60 content)
 2. **Category Distribution**: System-Design has 7 files; all others have 5
-3. **Section Compliance**: All 55 content files have exactly 8 sections
+3. **Section Compliance**: All 60 content files have exactly 8 sections
 4. **Cross-Reference Validity**: All internal links resolve to existing files
 5. **Naming Convention**: All files follow `XX-Category/NN-Name.md` format
 

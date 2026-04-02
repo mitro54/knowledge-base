@@ -83,6 +83,13 @@ A comprehensive markdown-based knowledge base covering all known useful coding p
 - [04-Feature-Flags](11-DevOps/04-Feature-Flags.md) - Gradual rollouts
 - [05-Release-Management](11-DevOps/05-Release-Management.md) - Versioning
 
+### AI (Category 12) (WORK IN PROGRESS)
+- [01-LLM-Architecture](12-AI/01-LLM-Architecture.md) - Transformers, SSMs, and reasoning engines
+- [02-AI-Agentic-Workflows](12-AI/02-AI-Agentic-Workflows.md) - Autonomous agents and multi-agent orchestration
+- [03-MLOps-Pipeline](12-AI/03-MLOps-Pipeline.md) - Lifecycle management for 2026-standard models
+- [04-AI-Evaluations](12-AI/04-AI-Evaluations.md) - LLM-as-a-Judge and RAGAS metrics
+- [05-Vector-Databases](12-AI/05-Vector-Databases.md) - Embeddings, HNSW, and neural memory stores
+
 ## 🏗️ Architecture
 
 This knowledge base follows a modular design with:
@@ -119,10 +126,10 @@ Each content file contains exactly 8 sections:
 
 | Metric | Value |
 |--------|-------|
-| Total Files | 57 |
+| Total Files | 62 |
 | Root Files | 2 |
-| Content Files | 55 |
-| Categories | 11 |
+| Content Files | 60 |
+| Categories | 12 |
 | Sections per File | 8 |
 
 ## 📄 License
