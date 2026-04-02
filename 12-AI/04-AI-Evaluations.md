@@ -1,21 +1,18 @@
 # AI Evaluations
 
-AI Evaluations (Evals) represent the systematic process of testing Large Language Models and AI systems for accuracy, safety, and reliability using both automated and human-centric benchmarks.
+## Title & Summary
 
-## Summary
+AI Evaluations (Evals) represent the systematic, mathematically rigorous process of testing Large Language Models (LLMs), Multi-Modal Systems, and Autonomous Agents for accuracy, safety, reasoning validity, and trajectory efficiency. 
 
-In traditional software, testing is deterministic (Input A always results in Output B). In AI engineering, Large Language Models are non-deterministic, making standard unit tests insufficient for gauging performance. **AI Evaluations (Evals)** fill this gap by establishing a continuous testing framework that measures **"Fuzzy Correctness."**
-
-This involves creating **"Gold Sets"** (curated pairs of inputs and ideal outputs), using **"Model-based Evals"** (where a stronger LLM like GPT-4o judges the output of a smaller model based on a rubric), and measuring specific **RAG metrics** such as Faithfulness and Answer Relevancy. Evals are the "Testing Pyramid" of the AI world, providing the statistical confidence required to move generative features from prototype to production. Without evals, a simple prompt change is a "blind update" that may unexpectedly break downstream functionality.
+As of 2026, the industry has universally recognized that traditional deterministic software testing (where Input A precisely equals Output B) is completely insufficient for probabilistic reasoning engines. **AI Evaluations** establish a continuous, telemetry-driven testing framework that measures **"Fuzzy Correctness," "Semantic Adherence,"** and **"Agentic Safety."** This involves curating high-dimensional **"Gold Sets"** (verified pairs of inputs, expected context, and ideal reasoning trajectories), utilizing **"Judge-as-a-Service" (JaaS)** architectures, and relying on **Constitutional AI Rubrics** where highly capable frontier models (or specialized, ultra-fast 3B-parameter evaluator models) grade the outputs of production systems. Modern evals go beyond text, grading the specific API-tool choices made by Agentic Workflows and ensuring compliance with stringent global AI regulations (e.g., the EU AI Act). Without a robust evaluation pipeline, an AI deployment is not engineering; it is gambling.
 
 **Key Characteristics:**
-- **Non-Deterministic Testing**: Measuring "Pass/Fail" based on semantic meaning and intent rather than exact string matching.
-- **Model-Graded Evals (LLM-as-a-Judge)**: Using an high-reasoning LLM to score complex outputs (e.g., tone, reasoning, safety) based on a detailed prompt rubric.
-- **Benchmarking**: Comparing model versions using industry standards like MMLU (General knowledge), GSM8K (Math), or HumanEval (Python).
-- **RAG Triad Assessment**: Focusing on three critical dimensions: Context Relevancy, Faithfulness (Grounding), and Answer Relevancy.
-- **Guardrails**: Real-time filtering (e.g., Llama Guard, NeMo Guardrails) to prevent toxic, biased, or unauthorized outputs.
-- **Hallucination Detection**: Specialized tests to identify when a model is "imagining" facts not present in its context or training data.
-- **Red Teaming**: Proactive attempts to bypass model guardrails to identify security and safety vulnerabilities.
+- **Non-Deterministic Testing**: Measuring "Pass/Fail" based on semantic meaning, logical deduction, and intent rather than exact string matching.
+- **LLM-as-a-Judge & Panel of Judges**: Using a diverse panel of high-reasoning models (to eliminate self-preference bias) to score complex outputs based on declarative YAML rubrics.
+- **Agentic Trajectory Evaluation**: Instead of just grading the final answer, grading the *steps* an agent took (e.g., "Did it use the database tool efficiently, or did it waste 5 steps searching the web?").
+- **The RAG Triad + 1**: Context Relevancy, Faithfulness (Grounding), Answer Relevancy, and *Information Density*.
+- **Continuous Shadow Evaluation**: Asynchronously scoring 10% of live production traffic to detect semantic drift or weight-decay from API providers in real-time.
+- **Automated Red Teaming**: Using Adversarial LLMs to continuously generate novel "Jailbreak" vectors to stress-test system guardrails before malicious users do.
 
 ---
 
@@ -23,69 +20,68 @@ This involves creating **"Gold Sets"** (curated pairs of inputs and ideal output
 
 ### The Challenge
 
-"It looks correct to me" is the most dangerous phrase in AI development. Without a rigorous evaluation backend, a developer might tweak a prompt to fix one bug, only to inadvertently cause 10 new hallucinations in a different scenario. Generative AI requires a **Regression Suite** that can handle the variability and "creativity" of natural language output.
+"It looks correct to me" is the most dangerous phrase in modern software development. Without a rigorous, mathematically sound evaluation backend, a developer might tweak a system prompt to fix a minor formatting bug, only to inadvertently cause a catastrophic spike in hallucinations across edge cases. Generative AI requires a **Semantic Regression Suite** capable of handling the inherent creativity, variance, and non-determinism of latent-space outputs. 
 
 ### Context
 
-- **Historical Context**: Early LLM testing (2022) was purely qualitative ("vibe checks"). As models hit production, this approach failed to scale and led to high-profile AI failures.
-- **Technical Context**: Modern "Small Language Models" (SLMs like Phi-3 or Llama-8B) must be compared against "Frontier" models to see if they are intelligent enough for specific sub-tasks.
-- **Business Context**: Enterprises need to quantify the ROI of AI by proving it is "99% accurate" before replacing human support agents or sales reps.
-- **The Prompt Drift Problem**: As model providers (OpenAI/Anthropic) update their weights, behavior can change overnight. Evals are the only way to detect this "Model Drift."
+- **Historical Context**: In 2023, LLM testing was purely qualitative ("vibe checks"). As models were hooked up to real-world APIs, this approach failed spectacularly, leading to high-profile autonomous agents confidently executing destructive actions or hallucinating legal precedents.
+- **Technical Context**: Modern infrastructure dynamically routes tasks to different models (e.g., Claude 4 for logic, Llama 4 8B for formatting). You must mathematically prove the 8B model is "smart enough" for the specific sub-task, or risk breaking the entire pipeline.
+- **Business Context**: Enterprises mandate strict ROI and liability containment. You cannot replace human L1 support agents unless you can definitively prove the AI is "99.9% accurate and 100% compliant" on product policy.
+- **The Prompt Drift Problem**: As closed-weight model providers (OpenAI, Anthropic, Google) silently update their API backends, model behavior can regress overnight. Evals are the only defense mechanism against "Provider Drift."
 
 ### Consequences of Not Addressing
 
-- **Hidden Regressions**: A prompt update that makes the model "more helpful" might break its ability to output valid JSON for the API.
-- **Hallucination Cascades**: One incorrect fact in a multi-step Agentic workflow causes the entire 10-step process to fail catastrophically.
-- **Safety & Compliance Breaches**: The model providing instructions for illegal acts or leaking internal secrets because it wasn't tested with "Red Teaming."
-- **Model Over-Reliance**: Deploying a model that is "90% good" but fails on the 10% of critical edge cases that cause business loss.
-- **Flaky Products**: Users receiving different quality levels for the same query, leading to "Un-reproducible" customer bugs.
-- **Reward Hacking**: The model "cheats" on simpler metrics (like BLEU score) while providing a nonsensical answer to the user.
+- **Hidden Regressions (The Butterfly Effect)**: A prompt update intended to make a bot "more empathetic" inadvertently overrides its instruction to output strict JSON, breaking downstream parsers.
+- **Agentic Cascade Failures**: One hallucinated fact in Step 2 of an autonomous agent's 15-step workflow poisons the entire context window, causing a catastrophic chain reaction of incorrect tool calls.
+- **Compliance & Regulatory Breaches**: The model leaks PII, provides unauthorized financial advice, or hallucinates copyrighted material because it was never subjected to automated "Red Teaming."
+- **Model Over-Reliance & Cost Explosions**: Using a $20/1M-token frontier model for a task that a $0.20/1M-token SLM could handle, simply because the engineering team lacked the evaluation metrics to confidently downgrade.
+- **Reward Hacking**: The model learns to "cheat" on simplistic lexical metrics (like BLEU or ROUGE scores) by outputting verbose, repetitive text that scores highly but provides zero actual value to the end user.
 
 ---
 
 ## Solution
 
-### The AI Evaluation Lifecycle
+### The 2026 AI Evaluation Lifecycle
 
-AI Evals integrate into the standard CI/CD pipeline, acting as the "Quality Gate" for model releases.
+AI Evals integrate deeply into the standard CI/CD pipeline and the MLOps infrastructure, acting as the absolute "Quality Gate" for any prompt, weight, or code release.
 
+```text
+    ┌────────────────┐      ┌────────────────┐      ┌────────────────┐
+    │ 1. Golden Sets │      │ 2. Test Runner │      │ 3. Judge Panel │
+    │ -------------- │      │ -------------- │      │ -------------- │
+    │ • Edge Cases   │─────▶│ • vLLM Batching│─────▶│ • GPT-5 Judge  │
+    │ • RAG Contexts │      │ • Tool Mocks   │      │ • Llama-Eval   │
+    │ • Red Team DB  │      │ • Trace Capture│      │ • Custom Rubric│
+    └────────────────┘      └────────────────┘      └──────┬─────────┘
+            ▲                       ▲                      │
+            │                       │              ┌───────▼─────────┐
+            │                       │              │ 4. Aggregation  │
+            │                       │              │ --------------- │
+            └───────────────────────┴──────────────│ • Drift Alerts  │
+               (Failing Production Logs Auto-Sync) │ • CI/CD Block   │
+                                                   │ • Cost vs Score │
+                                                   └─────────────────┘
 ```
-    ┌──────────────┐      ┌──────────────┐      ┌──────────────┐
-    │  Gold Set    │      │  Execution   │      │   Judging    │
-    │ (Inputs)     │─────▶│  (Prompt)    │─────▶│ (LLM-Judge)  │
-    └──────────────┘      └──────────────┘      └──────┬───────┘
-           ▲                      ▲                    │
-           │              Rules:  │                    │
-           │              [ Tone  │              Metrics:
-           └──────────────[ Facts │              [ Accuracy
-                          [ Safety│              [ Toxicity ]
-                                  └────────────────────┘
-```
 
-### The RAG Triad Metrics
+### The Modern Evaluation Taxonomies
 
-1.  **Context Relevancy**: Is the retrieved context actually useful for answering the user's question?
-2.  **Faithfulness (Grounding)**: Is the generated answer derived *strictly* from the provided context?
-3.  **Answer Relevancy**: Does the answer address the user's query directly and accurately?
+1.  **Deterministic Heuristics**: Regex matches, JSON Schema validation, and exact keyword inclusion. (Fastest, cheapest).
+2.  **RAG Fidelity Metrics (The Triad)**:
+    -   *Context Relevancy*: Penalizes the retrieval system if it fetches useless documents.
+    -   *Faithfulness*: Penalizes the LLM if it outputs facts *not* present in the retrieved context.
+    -   *Answer Relevancy*: Penalizes the LLM if it avoids answering the user's actual prompt.
+3.  **Agentic Trajectory Evals**:
+    -   *Tool Selection Accuracy*: Did the agent choose the correct API?
+    -   *Parameter Hallucination*: Did the agent invent an argument for the API that wasn't requested?
+    -   *Step Efficiency*: Did the agent solve the problem in 3 steps, or did it wander for 10 steps?
+4.  **Constitutional Safety Evals**: Using an LLM to grade outputs against a strict set of corporate principles (e.g., "Is this output sexist?", "Does this output suggest self-harm?").
 
 ### Key Components of an Eval Suite
 
-1.  **GOLD Set (Eval Set)**: A collection of 100-500+ "ideal" input-output pairs that represent the core use cases and high-risk edge cases of the product.
-2.  **Metric Calculators**:
-    - **Deterministic**: Regex, JSON schema validation, exact keyword matching.
-    - **Statistical**: BLEU, ROUGE, BERTScore (for summarization).
-    - **Model-Based**: G-Eval, DeepEval, RAGAS (using an LLM to assign scores).
-3.  **LLM-as-a-Judge Rubric**: A set of criteria (e.g., "Score 1 if toxic, Score 5 if helpful") that guides the evaluator model.
-4.  **Side-by-Side (Elo) Comparison**: Presenting two completions (A and B) and asking the judge "Which is better for Task X?". This creates an "Elo rating" for prompts.
-5.  **Adversarial (Red Team) Prompts**: A library of "Jailbreak" attempts to test the robustness of safety guardrails.
-6.  **Continuous Evaluation**: Running a subset of evals on live production traffic to detect real-time drift.
-
-### How It Addresses the Problem
-
-- **Quantifies Progress**: Instead of "feeling" the prompt is better, you can say "Accuracy improved from 82% to 91% on the Gold Set."
-- **Standardizes Grading**: LLM judges use a consistent, non-tiring rubric, reducing the subjectivity and fatigue of human reviewers.
-- **Identifies Edge Cases**: Automated "Stress Testing" with thousands of synthetic prompts uncovers failures a human would never have thought to type.
-- **Detects Environmental Drift**: Continuous evaluation of production traffic identifies when a model provider starts behaving differently on the backend.
+1.  **Dynamic GOLD Sets**: Not just static text, but programmatic datasets that evolve based on recent production failures.
+2.  **Specialized Evaluator Models**: By 2026, nobody uses expensive generalist models for evals. Teams deploy specifically fine-tuned `Eval-7B` models trained exclusively on grading rubrics, achieving GPT-5 level grading at 1/100th the cost.
+3.  **Side-by-Side (Elo) Arenas**: Presenting two completions (A and B) and asking a Judge Panel "Which is better for Task X?". This generates a continuous Elo rating for different system prompt versions.
+4.  **Asynchronous Shadow Judging**: Routing 5% of all live production LLM outputs to a queue where they are graded in the background to detect real-time semantic drift.
 
 ---
 
@@ -93,28 +89,22 @@ AI Evals integrate into the standard CI/CD pipeline, acting as the "Quality Gate
 
 ### Appropriate Scenarios
 
-| Scenario | Suitability | Evaluator Type | Priority |
-|----------|-------------|----------------|----------|
-| RAG Pipeline Tuning | ⭐⭐⭐⭐⭐ Essential | RAGAS (Faithfulness) | High |
-| System Prompt Updates | ⭐⭐⭐⭐⭐ Essential | Elo / Side-by-Side | High |
-| Model Upgrades (e.g. v3 to v4) | ⭐⭐⭐⭐⭐ Essential | Golden Set (Regression) | High |
-| Code Completion Tools | ⭐⭐⭐⭐ High | Unit Test Execution | High |
-| Creative Writing Tools | ⭐⭐⭐ Good | Human-in-the-Loop | Low |
-| Classification (Sentiment) | ⭐⭐⭐⭐ High | Exact Match / F1 Score | Medium |
+| Scenario | Suitability | Evaluator Archetype | Priority |
+| :--- | :--- | :--- | :--- |
+| **Agentic Tool Workflows** | ⭐⭐⭐⭐⭐ Essential | Trajectory / Step Evaluator | Critical |
+| **RAG Pipeline Optimization** | ⭐⭐⭐⭐⭐ Essential | RAGAS (Faithfulness) | Critical |
+| **System Prompt Refactoring** | ⭐⭐⭐⭐⭐ Essential | Elo / Side-by-Side Arena | High |
+| **Swapping Model Providers** | ⭐⭐⭐⭐⭐ Essential | Golden Set (Regression) | High |
+| **Code Completion Models** | ⭐⭐⭐⭐ High | Functional Unit Test Execution | High |
+| **Classification (Sentiment)** | ⭐⭐⭐⭐ High | Exact Match / F1 / Precision | Medium |
+| **Creative Content/Poetry** | ⭐⭐ Low | Human-in-the-Loop (HITL) | Low |
 
 ### Metric Selection Hierarchy
 
-- **High Stakes (Legal/Health)**: Priority = **Faithfulness** and **Safety**. Manual human audit is required.
-- **Developer Productivity (Coding)**: Priority = **Functional Correctness** (Does the code run?).
-- **Customer Support (Chat)**: Priority = **Answer Relevancy** and **Tone**. LLM-as-a-Judge is efficient here.
-- **Data Extraction (JSON)**: Priority = **Schema Validation** (Exact match) and **Completeness**.
-
-### Indicators for Adoption
-
-- **"I changed one word and it broke everything"**: Proof that you need automated regressions.
-- **High volume of customer complaints**: "The AI is hallucinating" reports.
-- **You are switching model providers**: Need to know if Llama 3 is "safe enough" compared to GPT-4.
-- **Latency-Accuracy tradeoff**: Choosing a faster model only after proving it doesn't sacrifice quality.
+-   **High Stakes (Legal/Medical/Financial)**: Priority = **Faithfulness**, **Toxicity**, and **Hallucination Rate**. Human audit fallback is mandatory.
+-   **Autonomous Agents (DevOps/SecOps)**: Priority = **Trajectory Efficiency** and **Tool Syntax Validity**.
+-   **Customer Support (Chatbots)**: Priority = **Answer Relevancy** and **Brand Tone Alignment**. LLM-as-a-Judge is highly effective here.
+-   **Data Extraction (ETL)**: Priority = **Strict Schema Validation** and **Completeness**.
 
 ---
 
@@ -123,85 +113,135 @@ AI Evals integrate into the standard CI/CD pipeline, acting as the "Quality Gate
 ### Advantages
 
 | Advantage | Description |
-|-----------|-------------|
-| **Confident Releases** | Deployment becomes a technical decision based on data, not a "hope." |
-| **Statistical Rigor** | Moves away from one-off failure reports to "Aggregate Quality" metrics. |
-| **Developer Autonomy** | Engineers can iterate on prompts with immediate feedback from the "Judge." |
-| **Cost Optimization** | Proven accuracy allows for downgrading from expensive models (GPT-4) to cheap models (Llama 8B). |
-| **Safety Assurance** | Validated guardrails ensure compliance with legal and ethical standards. |
+| :--- | :--- |
+| **Mathematical Confidence** | Deployment becomes an objective technical decision based on statistically significant data, not a "hope." |
+| **Decentralized Autonomy** | Engineers can aggressively iterate on prompts or RAG algorithms with immediate, automated feedback. |
+| **Massive Cost Optimization** | Proven accuracy matrices allow teams to confidently downgrade from expensive frontier models to cheap, open-weight models. |
+| **Regulatory Compliance** | Validated, immutable evaluation logs ensure compliance with AI safety laws and provide liability shielding. |
+| **Objective Alignment** | Eliminates endless meetings arguing about subjective output quality by standardizing the "Definition of Good." |
 
 ### Disadvantages
 
-| Disadvantage | Description |
-|--------------|-------------|
-| **Recursive API Costs** | Running GPT-4 to judge 10,000 Llama 3 calls can be more expensive than the inference itself. |
-| **Judge Bias** | The evaluation model (e.g. GPT-4) might prefer its own writing style or show bias toward specific model formats. |
-| **Maintenance Burden** | GOLD sets must be updated as the product features change, leading to "Eval Rot." |
-| **Non-Real-Time** | Comprehensive evals can take minutes or hours to run, slowing down the CI loop. |
-| **Complexity** | Setting up a sophisticated framework (Promptfoo/DeepEval) requires significant initial engineering. |
-
-### Performance Optimization
-
-- **Parallel Judging**: Running evaluations in parallel batches to reduce CI wait time.
-- **Small Evaluation Models**: Using specialized 7B-parameter "Judge" models (like Selene or Prometheus) to save costs.
-- **Deterministic Evals First**: Running cheap Regex/Schema checks before moving to expensive LLM-calls.
+| Challenge | Description |
+| :--- | :--- |
+| **The "Judge Bias" (Self-Preference)** | LLM Evaluators overwhelmingly prefer answers written in their own distinct "dialect" or tone, skewing results. |
+| **Compute Overhead** | Running comprehensive LLM-as-a-Judge suites across 10,000 commits can rival the cost of actual production inference. |
+| **Eval Rot** | GOLD sets must be rigorously maintained. If the product UI or API changes, the expected tool trajectories in the Eval Set instantly rot. |
+| **Latency in CI/CD** | Semantic evaluations inherently require massive LLM calls, which can slow down CI/CD pipelines from 3 minutes to 45 minutes. |
+| **False Equivalencies** | Passing an eval suite does not mathematically guarantee 100% safety against novel zero-day prompt injection attacks. |
 
 ---
 
 ## Implementation Example
 
-### 1. Model-Based Evaluation (Python/DeepEval)
+### 1. Agentic Trajectory Evaluation (Python - 2026 Standard)
+
+This example demonstrates how to evaluate not just text, but the *steps* an autonomous agent took to solve a problem using a modern framework (e.g., DeepEval v3 or LangSmith Evals).
 
 ```python
-# AI Evaluation Implementation Example
+import asyncio
+from typing import List, Dict
 from deepeval import assert_test
-from deepeval.test_case import LLMTestCase
-from deepeval.metrics import FaithfulnessMetric, AnswerRelevancyMetric
+from deepeval.test_case import AgentTestCase
+from deepeval.metrics import TrajectoryEfficiencyMetric, ToolHallucinationMetric
+from autonomous_agent import DevAgent # Your internal agent wrapper
 
-# Configuration: The Metric logic
-# Faithfulness: Is the answer derived ONLY from the context?
-faithfulness_metric = FaithfulnessMetric(threshold=0.8)
-relevancy_metric = AnswerRelevancyMetric(threshold=0.8)
+# 1. Define the Evaluation Metrics
+# Fails if the agent uses more than 1.5x the optimal number of steps
+efficiency_metric = TrajectoryEfficiencyMetric(threshold=0.8, strict_mode=True)
+# Fails instantly if the agent invents a tool argument that doesn't exist
+tool_safety_metric = ToolHallucinationMetric(threshold=1.0) 
 
-# Test Case: Input, Context, and the Model's output
-test_case = LLMTestCase(
-    input="What is the interest rate on the Prime savings account?",
-    actual_output="The interest rate is 4.5% APY.",
-    retrieval_context=[
-        "Prime account interest is currently 4.5%. Basic accounts are 2.0%."
+async def test_agent_database_query_trajectory():
+    """
+    Evaluates if the agent can correctly query a database and summarize,
+    without hallucinating SQL tables or wasting steps searching the web.
+    """
+    
+    user_query = "How many enterprise users signed up in Q3 2026?"
+    
+    # The optimal, expected path the agent SHOULD take
+    expected_trajectory = [
+        {"tool": "get_db_schema", "args": {"tables": ["users", "subscriptions"]}},
+        {"tool": "execute_read_only_sql", "args": {}}, # Precise args checked fuzzily
+        {"tool": "format_markdown_response", "args": {}}
     ]
-)
 
-# Execution: Running the Eval (This uses GPT-4o as the judge)
-def test_savings_accuracy():
-    # Will fail if score < 0.8
-    assert_test(test_case, [faithfulness_metric, relevancy_metric])
+    # 2. Execute the Agent (Capture traces automatically)
+    agent = DevAgent(model="claude-4-opus", max_steps=5)
+    result = await agent.execute(user_query)
+    
+    # 3. Construct the Agentic Test Case
+    test_case = AgentTestCase(
+        input=user_query,
+        actual_output=result.final_answer,
+        actual_trajectory=result.execution_trace, # The captured tool calls
+        expected_trajectory=expected_trajectory,
+        expected_output_semantics="A numerical answer representing enterprise signups for Q3."
+    )
 
-# Result Interpretation
-# metric.score will be 1.0 (Success) or <1.0 (Fail)
+    # 4. Run the Evaluation (Uses a fast 8B judge model locally)
+    assert_test(test_case, [efficiency_metric, tool_safety_metric])
+
+# Example execution in PyTest:
+# $ pytest test_agent_trajectories.py
+# PASSED [100%] - Trajectory Efficiency: 0.92, Tool Safety: 1.0
 ```
 
-### 2. Multi-Prompt Comparison (Promptfoo YAML)
+### 2. Continuous Production Shadow Evaluation (Python)
 
-```yaml
-# promptfoo.config.yaml
-# Comparing two prompts across a dataset of test cases
-prompts:
-  - "Answer professionally: {{query}}"
-  - "You are a friendly support bot. Help the user: {{query}}"
+A background job that pulls live traffic, evaluates it asynchronously, and triggers Prometheus alerts if the model begins to hallucinate or drift.
 
-providers:
-  - openai:gpt-4o
+```python
+import asyncio
+import time
+from database import ProductionTelemetry
+from metrics_system import PrometheusClient
+from deepeval.metrics import FaithfulnessMetric
+from deepeval.test_case import LLMTestCase
 
-tests:
-  - vars:
-      query: "How do I reset my password?"
-    assert:
-      - type: javascript
-        # Custom logic: must include word 'settings'
-        value: output.toLowerCase().includes('settings')
-      - type: llm-rubric
-        value: "does not sound like a robot"
+db = ProductionTelemetry()
+prom_client = PrometheusClient()
+
+# High-throughput, specialized local evaluator model
+faithfulness_judge = FaithfulnessMetric(threshold=0.85, evaluation_model="llama-5-eval-8b")
+
+async def shadow_evaluate_production_batch():
+    """Runs every 5 minutes to evaluate a 5% sample of production RAG calls."""
+    
+    # Pull 5% random sample of RAG queries from the last 5 minutes
+    recent_logs = db.get_recent_rag_traces(sample_rate=0.05, minutes=5)
+    print(f"Shadow Evaluating {len(recent_logs)} production traces...")
+    
+    tasks = []
+    for log in recent_logs:
+        test_case = LLMTestCase(
+            input=log.user_query,
+            actual_output=log.llm_response,
+            retrieval_context=log.retrieved_documents
+        )
+        # Measure faithfulness asynchronously
+        tasks.append(faithfulness_judge.a_measure(test_case))
+        
+    results = await asyncio.gather(*tasks)
+    
+    # Calculate aggregate drift
+    passing_scores = sum(1 for r in results if r >= 0.85)
+    faithfulness_ratio = passing_scores / len(results) if results else 1.0
+    
+    # Export to Observability Stack
+    prom_client.gauge("llm_production_faithfulness_ratio").set(faithfulness_ratio)
+    
+    if faithfulness_ratio < 0.90:
+        prom_client.trigger_alert(
+            "High Hallucination Rate Detected", 
+            f"Faithfulness dropped to {faithfulness_ratio * 100}%. Provider weight drift suspected."
+        )
+
+# Event Loop Execution
+# while True:
+#     asyncio.run(shadow_evaluate_production_batch())
+#     time.sleep(300)
 ```
 
 ---
@@ -211,66 +251,57 @@ tests:
 ### Common Mistakes
 
 #### 1. The "Vibe Check" Deployment
-Relying on a developer typing 3 queries into a chat window before deploying a change.
-**Result**: Total failure to catch regressions in the other 95% of use cases.
-**Fix**: Establish a minimal "Golden Set" of at least 20 entries for every new feature.
+```text
+❌ BAD: A prompt engineer tweaks a system prompt, runs 3 random queries in an internal playground UI, says "Looks much better," and merges to production.
+Result: Complete failure to catch semantic regressions in the 95% of edge-case scenarios not manually tested, leading to user churn.
+```
+```text
+✅ GOOD: Establish an automated, immutable "Golden Set" of at least 150 diverse inputs covering all known edge cases, which must pass in CI/CD before any merge.
+```
 
-#### 2. Evaluating the Wrong Model
-Using a 3.5-level model to judge a 4-level model.
-**Result**: The judge is "dumber" than the examinee, leading to inaccurate or random scores.
-**Fix**: Always use the most capable model available (e.g. GPT-4o or Claude 3.5 Opus) as the evaluator.
+#### 2. Evaluating the Examinee with a Weaker Judge
+```text
+❌ BAD: Using a heavily quantized, 8B parameter model to grade the complex, nuanced reasoning outputs of a massive 120B parameter frontier model.
+Result: The judge lacks the intelligence to comprehend the correct answer, leading to massive False Negatives and random scoring variance.
+```
+```text
+✅ GOOD: The Judge must always be equal to or more capable than the Target Model, OR it must be a specially fine-tuned Evaluator Model explicitly trained on human grading distributions.
+```
 
-#### 3. Neglecting "Context Grounding"
-Testing the LLM's answer without verifying if it matches the RAG retrieval data.
-**Result**: The LLM might give a "correct" answer based on its training data, even though your RAG system failed to provide the source material.
-**Fix**: Separately evaluate **Retrieval** (did you find the right doc?) and **Generation** (is the answer based on that doc?).
+#### 3. Neglecting "Context Grounding" in RAG
+```text
+❌ BAD: Testing the LLM's final answer for correctness without verifying *where* the answer came from.
+Result: The LLM answers a question correctly based on its internal parametric memory, masking the fact that your vector database retrieval system actually failed completely.
+```
+```text
+✅ GOOD: Strictly decouple RAG evaluations. Evaluate Retrieval (NDCG/MRR) separately from Generation (Faithfulness/Grounding).
+```
 
-#### 4. Hardcoded String Matching (Non-Fuzzy)
-Failing a test because the model said "four percent" instead of "4%".
-**Result**: High volume of "False Failures" that developers eventually start ignoring.
-**Fix**: Use semantic similarity (Cosine similarity) or LLM evaluation.
-
-### Warning Signs
-
-- **"I think the prompt is better now"**: Subjective language in PRs without metric support.
-- **Evals always pass 100%**: Likely because the metrics are too lenient or the GOLD set is too similar to the training data.
-- **Tests take too long to run**: Check for sequential LLM judging instead of parallel.
-- **Model drift goes unnoticed**: You aren't running evals on production samples.
+#### 4. The "Position Bias" in Side-by-Side Evals
+```text
+❌ BAD: Always asking the LLM Judge to "Choose between Output A and Output B" without randomizing the order.
+Result: LLMs suffer from severe Position Bias and will disproportionately vote for "Output A" simply because it appeared first in the context window.
+```
+```text
+✅ GOOD: Swap the order of A and B internally, run the eval twice, and only accept the result if the judge remains consistent regardless of position.
+```
 
 ---
 
 ## Related Patterns
 
-### Complementary Patterns
+### Complementary System Patterns
 
-- [LLM Architecture](./01-LLM-Architecture.md) - Understanding the "Context Window" limitations that lead to hallucinations.
-- [MLOps Pipeline](./03-MLOps-Pipeline.md) - Evals act as the "Unit Tests" in the AI deployment pipeline.
-- [Observability](../10-Observability/04-Metrics.md) - Exporting Eval scores to Prometheus/Grafana to track performance over time.
+-   **[LLM Architecture](./01-LLM-Architecture.md)** - Understanding the probabilistic nature of the generation models being evaluated.
+-   **[AI Agentic Workflows](./02-AI-Agentic-Workflows.md)** - The primary target for complex Trajectory Evals and Tool Safety Evals.
+-   **[MLOps Pipeline](./03-MLOps-Pipeline.md)** - Evaluations act as the deterministic "Unit Tests" and gating mechanisms within the deployment pipeline.
+-   **[Observability & Metrics](../10-Observability/04-Metrics.md)** - Exporting Eval scores to tools like Grafana/Datadog to track production quality over time.
+-   **[Testing Pyramid](../06-Testing-Engineering/01-Testing-Pyramid.md)** - How AI Evals fit into the broader software testing philosophy (spanning Unit, Integration, and E2E).
 
-### Alternative Frameworks
+### Evaluation Maturity Model
 
-- **Promptfoo**: The standard for CLI-based side-by-side prompt evaluation.
-- **RAGAS**: Specialized metrics for RAG systems (Faithfulness, Relevancy).
-- **LangSmith**: Managed platform from LangChain for production trace evaluation.
-- **Arize Phoenix**: Local evaluation of RAG traces and embedding-space drift.
-
-### See Also
-
-- [Large Language Model Evaluations (Guide by Anthropic)](https://www.anthropic.com/news/evaluating-llms)
-- [How to Build an LLM Evaluation Pipeline](https://www.wandb.courses/courses/evaluating-llms)
-- [OpenAI Evals Framework (GitHub)](https://github.com/openai/evals)
-- [DeepEval: The Unit Testing Framework for LLMs](https://github.com/confident-ai/deepeval)
-
----
-
-## Evaluation Maturity Checklist
-
-- **Level 1**: Human "Vibe Checks" on a handful of queries.
-- **Level 2**: Static "Gold Sets" with regex/string match assertions.
-- **Level 3**: LLM-as-a-Judge for tone and reasoning quality.
-- **Level 4**: Automated RAG assessments (Faithfulness/Grounding) in CI.
-- **Level 5**: Continuous Production Evaluation with drift alerts.
-
-### Summary Conclusion
-
-AI Evaluation is the bridge between a "Science Project" and a "Product." In a world where AI output is fluid, Evals provide the deterministic anchor that allows engineering teams to move fast without breaking things. If you aren't measuring your AI, you aren't engineering it; you are just wishing for it to work.
+-   **Level 1 (Ad-Hoc)**: Human "Vibe Checks" via UI playgrounds. Zero automation.
+-   **Level 2 (Deterministic)**: Static "Gold Sets" evaluated purely with Python regex and JSON schema assertions in CI.
+-   **Level 3 (Model-Graded)**: Implementing LLM-as-a-Judge for complex attributes like tone, helpfulness, and logical reasoning.
+-   **Level 4 (Component Isolation)**: Automated RAG triad assessments (Faithfulness/Relevancy) and Agent Trajectory evaluation.
+-   **Level 5 (Continuous AI Ops)**: Continuous shadow evaluation on live production traffic with automated alerting for semantic drift and automated Red Teaming.

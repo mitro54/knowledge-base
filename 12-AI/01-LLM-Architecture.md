@@ -1,306 +1,377 @@
 # LLM Architecture
 
-Large Language Models (LLMs) are deep learning models typically based on the Transformer architecture, designed to understand, generate, and manipulate human language and other sequential data.
+## Title & Summary
 
-## Summary
+Large Language Models (LLMs) are frontier deep learning architectures designed to understand, generate, manipulate, and reason across human language and natively multi-modal data streams. Functioning essentially as the "Operating System" for modern artificial intelligence, they bridge the gap between static parametric knowledge and dynamic real-world reasoning.
 
-The architecture of Large Language Models has shifted the paradigm of artificial intelligence from narrow, task-specific models to "frontier" models capable of general-reasoning and cross-domain knowledge retrieval. At the core of every modern LLM (like GPT-4, Claude 3, or Llama 3) is the **Transformer**—a deep neural network that utilizes "Attention Mechanisms" to weigh the significance of different words in a sequence regardless of their distance. This allows the model to maintain long-range dependencies and understand complex semantic nuances.
-
-Furthermore, architectures have evolved to include **Retrieval-Augmented Generation (RAG)**, which bridges the gap between static model weights and dynamic, real-world data. Modern LLM design is increasingly focusing on **Long Context** capabilities (e.g., Gemini 1.5 with 2M tokens) and **Efficient Inference** through techniques like Mixture-of-Experts (MoE) and Quantization. As we move toward the next generation, architectures are becoming natively **Multi-Modal**, processing images, audio, and video in the same unified latent space, effectively acting as the "Operating System" for intelligence.
-
-**Key Characteristics:**
-- **Transformer-Based**: Relies on Multi-Head Self-Attention to process data in parallel rather than sequentially, solving the "vanishing gradient" problem of RNNs.
-- **Attention Mechanism**: Assigns a numeric weight to Every Token in the context window based on its relevance to the current token being generated.
-- **Context Windows**: The "working memory" of a model (ranging from 8k to 2M+ tokens).
-- **Tokenization**: Breaking down text into sub-word units (tokens) (e.g., Tiktoken).
-- **RAG Integration**: Decoupling parametric (weights) and non-parametric (external DB) knowledge.
-- **Quantization**: Compressing models (e.g., FP16 to INT4) to reduce RAM usage and increase inference speed.
-- **Position Embeddings**: Encoding word order (e.g., RoPE, ALiBi).
-- **Autoregressive Generation**: Generating one token at a time, recursively.
-- **Mixture of Experts (MoE)**: Sparse activation of parameters for high-speed inference of massive models.
-- **Neural Scaling Laws**: Predictable performance increases based on Compute, Data, and Parameters.
-
----
+As of 2026, the architecture of LLMs has shifted AI from narrow, task-specific models to generalized reasoning engines capable of cross-domain knowledge retrieval. At the core of every modern LLM (such as GPT-5, Claude 4, Llama 4, or Gemini 2.0) is either an advanced **Transformer** or a hybrid **Transformer-SSM (State Space Model)** architecture. These networks utilize sophisticated "Attention Mechanisms" and linear complexities to weigh the significance of different tokens in a sequence regardless of distance. This allows the model to maintain long-range dependencies across context windows that now regularly exceed 2 to 10 million tokens. Modern iterations rely heavily on Agentic Retrieval-Augmented Generation (RAG), massively sparse Mixture-of-Experts (MoE) routing, and native multi-modal latent spaces to maintain extreme capability while optimizing inference compute on hardware like NVIDIA B200s and specialized LPUs.
 
 ## Problem Statement
 
-### The Challenge
+Traditional, static neural networks and early sequential models (like RNNs, LSTMs, and pre-2023 dense Transformers) faced critical architectural limitations that prevented generalized reasoning at scale:
 
-Static AI models are "frozen in time." Once training is complete (which takes months and costs millions), the model's knowledge of the world is fixed to its training cutoff date. Furthermore, models are prone to **Hallucinations**—generating confident but factually incorrect information because they are essentially "stochastic parrots" optimized for sequence probability rather than truth verification. Additionally, the computational cost of training and serving these models is immense, requiring specialized hardware and massive energy consumption.
-
-### Context
-
-- **Historical Context**: Before 2017, models like RNNs/LSTMs were stateful but struggled with "Long Range Dependencies." If a sentence was 50 words long, the model would lose the subject by the time it reached the object.
-- **Technical Context**: Modern LLMs require massive compute clusters (10,000+ NVIDIA H100 GPUs) for training, but "inference" must be cost-effective ($10k-$100k per GPU node).
-- **Business Context**: Enterprises need AI that is private, doesn't leak data, and provides verifiable citations.
-- **The Data Wall**: We are approaching the limit of high-quality human text on the internet.
-
-### Consequences of Not Addressing
-
-- **Model Hallucinations**: Providing incorrect medical or legal advice that looks authoritative.
-- **Knowledge Cutoffs**: Inability to answer questions about new technologies / AWS features.
-- **Privacy Leaks**: Training public models on private company code/strategy.
-- **High Latency**: Inefficient architectures that take seconds to respond to simple queries.
-- **Context Loss**: "Forgetting" the beginning of a long code folder or legal contract.
-- **Catastrophic Forgetting**: Fine-tuning causing the model to forget base knowledge.
-- **Energy Waste**: Carbon footprint concerns for simple enterprise tasks.
-
----
+* **Static Knowledge & Knowledge Cutoffs:** Once a model is trained (costing hundreds of millions of dollars and months of compute), its internal parametric memory is frozen. It cannot dynamically adapt to new information without expensive fine-tuning.
+* **The Context Bottleneck (Quadratic Complexity):** Standard Attention mechanisms scale quadratically ($O(N^2)$). If an input exceeded a few hundred thousand words, the compute and VRAM requirements skyrocketed exponentially, making massive document analysis cost-prohibitive.
+* **Hallucinations & Confabulation:** Generative models are inherently optimized for sequence probability (acting as stochastic predictors) rather than strict factual verification, leading to confident but incorrect outputs in mission-critical enterprise environments.
+* **Computational Contention & Memory Walls:** Dense models required massive VRAM (High Bandwidth Memory) during inference. Moving data between GPU SRAM and HBM became the primary bottleneck, preventing low-latency edge deployments.
+* **Data Wall Exhaustion:** Training purely on unstructured internet text resulted in diminishing returns. Models began consuming the entirety of high-quality human data, requiring new architectural paradigms to synthesize high-quality reasoning data (e.g., Q-Star/System 2 thinking algorithms).
+* **Privacy & Enterprise Leaks:** Centralized training and single-tenant cloud inferences on all available data created severe vulnerabilities for enterprise proprietary information, necessitating hybrid or localized architectural solutions.
 
 ## Solution
 
-### The Transformer Block Architecture (Internal Breakdown)
+LLM Architecture addresses these scaling and reasoning challenges through several interrelated systems, advanced mathematical operations, and hardware-software co-design:
 
-The LLM is a stack of identical Transformer layers. Each layer consists of Two primary sub-layers: Multi-Head Attention and a Feed-Forward Network.
+### Core Components
 
+1. **The Tokenizer Layer:** The translation layer that converts raw text, image patches, or audio waveforms into numerical sub-word integers (tokens) that the model can process (using advanced byte-pair encodings).
+2. **Multi-Modal Embedding Space:** A massive, high-dimensional vector space where tokens (text, audio, video) are mapped geographically based on their semantic meaning. Concepts like "Dog" and an image of a dog share the same mathematical vicinity.
+3. **Transformer/SSM Blocks:** The repeating layers of the model. By 2026, these are often hybrid architectures combining Multi-Head Self-Attention for precise recall and State Space Models (like Mamba-3) for linear-time processing of massive contexts.
+4. **KV Cache (Key-Value Cache):** A dynamic memory buffer that stores previously computed attention states during inference, drastically speeding up the generation of subsequent tokens.
+5. **The MoE Router:** A gating network that dynamically routes each token to specific "Expert" neural networks (e.g., routing math tokens to a math expert), keeping active parameter counts low.
+
+### Communication & Processing Patterns
+
+* **Multi-Head Self-Attention:** The mechanism that compares every token in the context window against every other token simultaneously, assigning mathematical relevance weights.
+* **Agentic Retrieval-Augmented Generation (RAG):** Decoupling knowledge from logic. The LLM acts as the reasoning engine, actively generating search queries to external Vector Databases and APIs to supply dynamic, highly-targeted factual context.
+* **Autoregressive Generation with Speculative Decoding:** Using a tiny, hyper-fast "draft" model to rapidly predict the next 10-15 tokens, and using the massive LLM to mathematically verify those tokens in parallel, vastly increasing Tokens-Per-Second (TPS).
+
+### Key Characteristics
+
+* **Massive Context Windows:** Advanced positional encodings (like RoPE - Rotary Positional Embeddings) and FlashAttention-3 allow working memory to scale to 10M+ tokens without degrading recall accuracy.
+* **Sparse Activation (MoE):** Only activating a small percentage (e.g., 4 experts out of 64) of the neural network per token. A 2-Trillion parameter model might only run 100 Billion parameters during a single inference step.
+* **Extreme Quantization:** Compressing network weights mathematically from FP16 (16-bit floating point) down to FP4, INT4, or even 1-bit/1.58-bit ternary architectures (e.g., BitNet), drastically reducing VRAM requirements.
+* **System 2 Reasoning Capability:** Architectures that pause to generate hidden "chain-of-thought" tokens before outputting an answer, drastically reducing hallucinations on complex logic puzzles.
+
+### Architecture Diagram: The 2026 Hybrid MoE Block
+
+```text
+    ┌─────────────────────────────────────────────────────────┐
+    │                   Input Token Embeddings                │
+    └───────────────────────────┬─────────────────────────────┘
+                                │
+    ┌───────────────────────────▼─────────────────────────────┐
+    │                 RMS Pre-Layer Normalization             │
+    ├─────────────────────────────────────────────────────────┤
+    │  HYBRID ROUTING LAYER (Token-Level Decision)            │
+    │  Is this token requiring deep recall or broad context?  │
+    └─────────┬─────────────────────────────────────┬─────────┘
+              │                                     │
+    ┌─────────▼─────────┐                 ┌─────────▼─────────┐
+    │  FlashAttention-3 │                 │  State Space Model│
+    │  (Deep Recall)    │                 │  (Linear Context) │
+    └─────────┬─────────┘                 └─────────┬─────────┘
+              │                                     │
+    ┌─────────▼─────────────────────────────────────▼─────────┐
+    │                   Residual Connection                   │
+    ├─────────────────────────────────────────────────────────┤
+    │                 RMS Pre-Layer Normalization             │
+    ├─────────────────────────────────────────────────────────┤
+    │               Mixture of Experts (MoE) Router           │
+    │                   (Selects Top 4 of 64)                 │
+    ├─────────┬─────────┬─────────┬─────────┬─────────┬───────┤
+    │ Expert 1│ Expert 2│ Expert 3│   ...   │Expert 63│Expert 64│
+    │ (SwiGLU)│ (SwiGLU)│ (SwiGLU)│         │(SwiGLU) │(SwiGLU) │
+    └─────────┴─────────┴─────────┴─────────┴─────────┴───────┘
+                                │
+    ┌───────────────────────────▼─────────────────────────────┐
+    │                   Residual Connection                   │
+    └─────────────────────────────────────────────────────────┘
 ```
-    ┌───────────────────────────┐
-    │  Residual Connection       │
-    ├───────────────────────────┤
-    │   Pre-Layer Norm (RMS)    │
-    ├───────────────────────────┤
-    │  Multi-Head Self-Attention│ <── Q, K, V Matrices
-    ├───────────────────────────┤
-    │  Residual Connection       │
-    ├───────────────────────────┤
-    │   Pre-Layer Norm (RMS)    │
-    ├───────────────────────────┤
-    │  Feed-Forward Net (MLP)   │ <── SwiGLU / Gated Linear
-    └───────────────────────────┘
-```
-
-### Self-Attention Matrix Calculation (Example)
-
-| Token | Focus: "Bank" (Financial) | Focus: "Bank" (Geographic) |
-|-------|--------------------------|----------------------------|
-| Account | 0.98 | 0.01 |
-| Transaction | 0.95 | 0.02 |
-| River | 0.01 | 0.96 |
-| Water | 0.02 | 0.92 |
-| Money | 0.97 | 0.03 |
-
-### Retrieval-Augmented Generation (RAG) Flow
-
-RAG effectively gives the LLM an "Open Book" to reference during generation.
-
-```
-    ┌──────────────┐      ┌──────────────┐      ┌──────────────┐
-    │     User     │      │    Vector    │      │     LLM      │
-    │    Query     │─────▶│    Context   │─────▶│   Reasoning  │
-    │ (Prompt)     │      │  (Retrieval) │      │    Engine    │
-    └──────────────┘      └──────┬───────┘      └──────┬───────┘
-           ▲                      ▲                    │
-           │              State:  │                    │
-           │              [ PDF   │              Response:
-           └──────────────[ SQL   │              [ Answer ]
-                          [ Logs  │              [ Cite   ]
-                                  └────────────────────┘
-```
-
-### Detailed GPU Memory Analysis (For Self-Hosting)
-
-| Model Size | Precision | Weights (GB) | KV Cache (128k) | Total VRAM Required |
-|------------|-----------|--------------|-----------------|---------------------|
-| 7B | FP16 | 14 GB | 2 GB | 1x 24GB GPU |
-| 7B | INT4 (Q4) | 4 GB | 2 GB | 1x 8GB GPU |
-| 70B | FP16 | 140 GB | 12 GB | 4x 80GB GPU |
-| 70B | INT4 (Q4) | 40 GB | 12 GB | 1x 80GB GPU |
-| 400B+ | FP16 | 800+ GB | 50+ GB | 16x 80GB GPU |
-
-### Advanced Architectural Components
-
-1.  **Grouped Query Attention (GQA)**: A performance optimization where multiple Query heads share single Key/Value pairs. This reduces the memory footprint of the "KV Cache" drastically, allowing for 10x larger batch sizes or longer context windows.
-2.  **ROPE (Rotary Positional Embeddings)**: Instead of adding absolute numbers to token positions, ROPE rotates the token vectors in multidimensional space. This allows the model to "understand" word distance relatively, which is key for long-document recall.
-3.  **Flash Attention 2**: A tiling algorithm that breaks the attention matrix into blocks that fit into GPU "SRAM." This avoids expensive trips to the slower HBM (Global Memory), resulting in 2-3x speedups in the attention layer.
-4.  **Mixture of Experts (MoE) Routing**: Found in models like Mixtral or GPT-4. Each token is sent to the top-2 "Expert" sub-networks out of 8+. This keeps the active parameter count low while the total world-knowledge remains high.
-5.  **SwiGLU Activation**: A gated linear unit activation function that has replaced standard ReLU in modern architectures (Llama, Gemma). It allows for better gradient flow and faster convergence during training.
-6.  **Speculative Decoding**: Running a 1B model to guess the next 5 tokens, then using a 70B model to verify them in parallel. This can double the perceived tokens-per-second for the user.
-7.  **Logit Bias / Top-P Sampling**: The "Steering Wheel" of the model.
-    - **Top-P (Nucleus Sampling)**: Dynamically choosing the smallest set of tokens that total probability $P$.
-    - **Temperature**: Flattening the probability curve (1.0 = creative, 0.0 = deterministic).
-
----
 
 ## When to Use
 
-### Appropriate Scenarios
+LLM Architecture implementations (via APIs, local hosting, or edge deployments) are appropriate when:
 
-| Scenario | Suitability | Model Choice | Hardware Recommendation |
-|----------|-------------|--------------|--------------------------|
-| Software Debugging | ⭐⭐⭐⭐⭐ Critical | Claude 3.5 Sonnet | A100/H100 for private |
-| Support Ticket Automation | ⭐⭐⭐⭐⭐ Critical | Llama 3 8B (vLLM) | 1x L4 / A10G |
-| Massive PDF Search | ⭐⭐⭐⭐⭐ Critical | Gemini 1.5 Pro | Google API |
-| Security Log Analysis | ⭐⭐⭐⭐ High | Fine-tuned Mistral | 4x A100 |
-| Creative Copywriting | ⭐⭐⭐ Good | GPT-4o | OpenAI API |
-| Data Schema Mapping | ⭐⭐⭐⭐ High | Structured-JSON LLM | Serverless GPU |
-
-### Model Selection Decision Tree
-
-- **Is the data private?** -> Host **Llama 3** or **Mistral** on internal nodes.
-- **Is the context > 100k tokens?** -> Use **Gemini 1.5** or **Claude 3**.
-- **Is inference speed the priority?** -> Use **Gemma** or **Groq Llama-3-70B**.
-- **Is the task complex coding/math?** -> Use **GPT-4o** or **Claude 3.5**.
-
----
+* **Unstructured Data Transformation:** Extracting rigid JSON schemas from messy PDFs, emails, audio logs, or handwritten notes.
+* **Agentic Orchestration & Workflow Automation:** Using Agentic LLMs to plan, route, and autonomously trigger deterministic APIs based on natural language intent (e.g., "Analyze my AWS bill and terminate unused instances").
+* **Massive Codebase Refactoring:** Automated refactoring, comprehensive test generation, and architectural vulnerability scanning across millions of lines of code simultaneously.
+* **Dynamic Real-Time Content Generation:** Personalized hyper-copywriting, dynamically generated video game environments and NPC dialogue, or real-time translation and summarization.
+* **Semantic Enterprise Search:** Powering internal search across massive proprietary knowledge bases using multi-hop RAG architectures.
+* **Cross-Modal Processing:** Generating structural 3D blueprints from a photograph, or transcribing and summarizing hour-long multi-speaker video meetings natively.
 
 ## Tradeoffs
 
 ### Advantages
 
-| Advantage | Description |
-|-----------|-------------|
-| **Intent Understanding** | Processes what the user "Meant," even with spelling/grammar errors. |
-| **Logic-over-Keywords** | Can solve problems by reasoning through steps (Chain of Thought). |
-| **Cross-Modal Power** | Native Vision/Audio models handle the world as it is, not just text. |
-| **Zero-Shot Mastery** | Solves competitive programming or law exams without task-specific training. |
-| **Rapid Iteration** | "Programming in English" replaces months of manual feature engineering. |
+| Benefit | Description |
+| :--- | :--- |
+| **Intent & Semantic Understanding** | Processes semantic meaning ("what the user meant"), bypassing brittle regex or exact-match constraints. |
+| **Zero-Shot Generalization** | Can solve entirely novel problems (like complex legal analysis or obscure coding languages) without task-specific fine-tuning. |
+| **Rapid Iteration Cycle** | "Programming in natural language" replaces months of manual feature engineering and ML model training. |
+| **Cross-Modal Synthesis** | Native multi-modal models treat images, audio, video, and text in the same latent space, capturing real-world nuance perfectly. |
+| **Agentic Autonomy** | When equipped with tools (Tool Calling/Functions), LLMs can execute multi-step plans, reflect on failures, and self-correct. |
+| **Emergent Capabilities** | Scaling compute and parameters reliably unlocks unpredictable but highly valuable new reasoning capabilities. |
 
 ### Disadvantages
 
-| Disadvantage | Description |
-|--------------|-------------|
-| **Non-Deterministic** | Identical inputs can result in slightly varied outputs (High variance). |
-| **Contextual Tax** | Costs scale linearly/quadratically with the amount of text sent. |
-| **Silent Failures** | Models might confidently lie about a code bug that it doesn't understand. |
-| **Environmental Cost** | Training one large model consumes Petawatt-hours of energy. |
-| **Token-Based Pricing** | Hard to predict monthly spend if user volume or prompt sizes fluctuate. |
-
----
+| Challenge | Description |
+| :--- | :--- |
+| **Non-Deterministic Outputs** | Identical inputs can result in slightly varied outputs due to temperature sampling, complicating automated CI/CD testing. |
+| **Silent Failures** | Models often confidently hallucinate incorrect information or broken code if they lack the underlying knowledge or context. |
+| **Contextual Compute Tax** | Compute costs and latency scale rapidly based on the input prompt length, requiring careful "token budgeting". |
+| **Resource Intensity** | Self-hosting frontier models requires significant capital expenditure in GPU/LPU hardware, cooling, and power infrastructure. |
+| **State Management Complexity** | Managing conversational state requires complex KV-cache handling, semantic routing, and database synchronization. |
+| **Security Surface Area** | Susceptible to Prompt Injection, Jailbreaking, and Data Exfiltration attacks via malicious input strings. |
 
 ## Implementation Example
 
-### 1. Production RAG Pipeline (Python)
+### Advanced Agentic RAG Pipeline with Tool Calling (Python - 2026 Standard)
+
+This implementation demonstrates a modern, context-aware RAG application using hybrid vector search, dynamic token budgeting, and native tool-calling capabilities available in modern architectures.
 
 ```python
-# LLM Architecture: Advanced RAG with Token awareness
 import os
 import tiktoken
-from langchain_openai import ChatOpenAI, OpenAIEmbeddings
-from langchain_community.vectorstores import Milvus
-from langchain.prompts import PromptTemplate
+import asyncio
+from typing import List, Dict, Any
+from vector_db_client import ModernVectorDB # 2026 abstract vector DB client
+from llm_provider import FrontierModelClient # e.g., OpenAI, Anthropic, Google SDK
 
-# Configuration: Model and Cost Tracking
-MODEL_NAME = "gpt-4o"
-encoding = tiktoken.encoding_for_model(MODEL_NAME)
+class EnterpriseReasoningAgent:
+    def __init__(self, model_name: str = "gpt-5-turbo"):
+        """
+        Initializes the Agent with a 2026 frontier model capable of native
+        tool calling and massive context windows.
+        """
+        self.model_name = model_name
+        self.llm = FrontierModelClient(model=model_name, temperature=0.1)
+        self.tokenizer = tiktoken.encoding_for_model(model_name)
+        
+        # Connect to a multi-modal, hybrid-search enabled Vector Database
+        self.db = ModernVectorDB(
+            collection_name="enterprise_secure_kb",
+            embedding_model="text-embedding-v4-large"
+        )
+        
+        # Modern models handle 2M+ tokens, but we budget for cost efficiency
+        self.max_context_tokens = 250_000 
 
-# Setup reasoning engine
-llm = ChatOpenAI(model=MODEL_NAME, temperature=0.1)
+    def _calculate_tokens(self, text: str) -> int:
+        """Accurately budget tokens to prevent context window overflow or high billing."""
+        return len(self.tokenizer.encode(text))
 
-# Retrieval logic
-db = Milvus(
-    embedding_function=OpenAIEmbeddings(),
-    collection_name="enterprise_kb"
-)
+    async def _hybrid_search(self, query: str, top_k: int = 15) -> List[Dict[str, Any]]:
+        """
+        Perform dense (vector) and sparse (BM25 keyword) hybrid retrieval.
+        In 2026, this often includes graph-based multi-hop retrieval natively.
+        """
+        print(f"Executing graph-hybrid search for query: {query}")
+        results = await self.db.search(
+            query=query, 
+            k=top_k, 
+            search_type="hybrid_graph",
+            alpha=0.6 # Balance: 60% Semantic, 40% Exact Keyword Match
+        )
+        return results
 
-def build_prompt(query, docs):
-    # Strategy: Injecting retrieved context with cost tracking
-    context = "\n".join([d.page_content for d in docs])
-    full_prompt = f"Using strictly this context:\n{context}\n\nQuestion: {query}"
-    
-    token_count = len(encoding.encode(full_prompt))
-    print(f"DEBUG: Input token count = {token_count}")
-    return full_prompt
+    async def execute_agentic_workflow(self, user_query: str) -> str:
+        """
+        Executes a multi-step workflow: Plan -> Retrieve -> Reason -> Generate
+        """
+        print(f"Initiating agentic workflow for: {user_query}")
+        
+        # STEP 1: Tool Definition (Giving the LLM agency)
+        tools = [
+            {
+                "type": "function",
+                "function": {
+                    "name": "query_internal_database",
+                    "description": "Query the internal knowledge base for company documents",
+                    "parameters": {
+                        "type": "object",
+                        "properties": {
+                            "search_query": {"type": "string", "description": "The optimized search query"}
+                        },
+                        "required": ["search_query"]
+                    }
+                }
+            }
+        ]
 
-def agentic_search(user_query):
-    # Search for top 5 matches
-    relevant_docs = db.similarity_search(user_query, k=5)
-    
-    # Generate grounded response
-    final_prompt = build_prompt(user_query, relevant_docs)
-    response = llm.invoke(final_prompt)
-    return response.content
+        system_prompt = (
+            "You are an autonomous enterprise reasoning agent. "
+            "You must use the provided tools to fetch context before answering. "
+            "If the retrieved context is insufficient, state 'Insufficient data'. "
+            "Always cite your sources using bracket notation e.g., [Doc_ID: 123]."
+        )
 
-print(agentic_search("How do we rotate API keys?"))
+        # STEP 2: Initial generation step (The LLM decides to use a tool)
+        messages = [
+            {"role": "system", "content": system_prompt},
+            {"role": "user", "content": user_query}
+        ]
+        
+        initial_response = await self.llm.chat_completion_async(
+            messages=messages,
+            tools=tools,
+            tool_choice="auto"
+        )
+        
+        # STEP 3: Handle Tool Calling
+        if initial_response.tool_calls:
+            for tool_call in initial_response.tool_calls:
+                if tool_call.function.name == "query_internal_database":
+                    # Extract the LLM's optimized search query
+                    optimized_query = tool_call.function.arguments["search_query"]
+                    
+                    # Execute our actual database search
+                    documents = await self._hybrid_search(optimized_query)
+                    
+                    # Format context blocks
+                    context_blocks = []
+                    current_tokens = 0
+                    
+                    for doc in documents:
+                        block = f"[Doc_ID: {doc['id']}]\n{doc['content']}\n"
+                        block_tokens = self._calculate_tokens(block)
+                        
+                        if current_tokens + block_tokens > self.max_context_tokens:
+                            print("Token threshold reached, truncating further context.")
+                            break
+                            
+                        context_blocks.append(block)
+                        current_tokens += block_tokens
+                        
+                    assembled_context = "\n---\n".join(context_blocks)
+                    
+                    # Append tool result back to the conversation history
+                    messages.append(initial_response.message)
+                    messages.append({
+                        "role": "tool",
+                        "tool_call_id": tool_call.id,
+                        "content": assembled_context
+                    })
+                    
+        # STEP 4: Final Generation (Reasoning over retrieved data)
+        final_response = await self.llm.chat_completion_async(
+            messages=messages,
+            temperature=0.0 # Deterministic output for enterprise facts
+        )
+        
+        return final_response.content
+
+# Example Execution Context
+# async def main():
+#     agent = EnterpriseReasoningAgent()
+#     answer = await agent.execute_agentic_workflow("Summarize the Q3 2026 API Key Rotation Policy.")
+#     print(answer)
 ```
 
-### 2. Manual Attention Block (Simplification)
+### Mixture-of-Experts (MoE) Routing Conceptualization
+
+Understanding the internal mathematics of how a 2026 sparse model routes tokens to save massive amounts of compute.
 
 ```python
-# Conceptual Multi-Head Attention logic
 import numpy as np
 
-def scaled_dot_product_attention(Q, K, V):
-    # 1. Similarity matrix
-    scores = np.dot(Q, K.T)
-    d_k = Q.shape[-1]
-    
-    # 2. Scale to prevent gradient overflow
-    scaled_scores = scores / np.sqrt(d_k)
-    
-    # 3. Softmax probabilities
-    probs = np.exp(scaled_scores) / np.sum(np.exp(scaled_scores), axis=-1, keepdims=True)
-    
-    # 4. Final context-aware weights
-    return np.dot(probs, V)
+class ConceptualMoERouter:
+    def __init__(self, num_experts=16, top_k=2, hidden_dim=4096):
+        """
+        Simulates the gating network of a Sparse LLM architecture.
+        Instead of running all 16 experts (which is computationally expensive),
+        we only route the token to the 'top_k' most relevant experts.
+        """
+        self.num_experts = num_experts
+        self.top_k = top_k
+        self.hidden_dim = hidden_dim
+        
+        # The routing weights learned during pre-training
+        # Maps the token's hidden state to expert probabilities
+        self.routing_weights = np.random.randn(hidden_dim, num_experts) * 0.01
 
-# This math happens billions of times per second in a GPU
+    def route_token(self, token_hidden_state: np.ndarray) -> tuple:
+        """
+        Determines which experts should process the current token.
+        token_hidden_state shape: (hidden_dim,)
+        """
+        # 1. Calculate raw logits for each expert via dot product
+        expert_logits = np.dot(token_hidden_state, self.routing_weights)
+        
+        # 2. Apply Softmax to get probability distribution across all experts
+        exp_logits = np.exp(expert_logits - np.max(expert_logits)) # Stability fix
+        expert_probs = exp_logits / np.sum(exp_logits)
+        
+        # 3. Find the indices of the Top-K experts with the highest probability
+        top_k_indices = np.argsort(expert_probs)[-self.top_k:][::-1]
+        
+        # 4. Extract the probabilities of only those selected experts
+        top_k_probs = expert_probs[top_k_indices]
+        
+        # 5. Normalize the chosen probabilities so they sum to 1.0
+        # This ensures the final output scale remains stable during the forward pass
+        routing_weights_final = top_k_probs / np.sum(top_k_probs)
+        
+        print(f"Token dynamically routed to Experts: {top_k_indices}")
+        print(f"With normalized weights: {routing_weights_final}")
+        
+        return top_k_indices, routing_weights_final
+
+# Simulation
+# router = ConceptualMoERouter()
+# simulated_token_state = np.random.randn(4096)
+# selected_experts, weights = router.route_token(simulated_token_state)
+# The output of the selected experts will then be multiplied by these weights and summed.
 ```
-
----
 
 ## Anti-Pattern
 
-### Common Mistakes
+### Common Mistakes to Avoid
 
 #### 1. The "Prompt-as-a-Script" Fallacy
-Expecting the LLM to follow a 50-step instruction list without a single error.
-**Result**: The model misses steps 20-30 completely (**Lost in the Middle**).
-**Fix**: Break it into several calls or specialized agents.
 
-#### 2. Ignoring The "Tokenization Paradox"
-Searching for "2024" but the tokenizer splits it into "20" and "24."
-**Result**: Semantic search fails because the query tokens don't match the database tokens.
-**Fix**: Use the same Embedding Model and Tokenizer for both search and indexing.
+```text
+❌ BAD: Expecting the LLM to follow a rigid 50-step instruction list flawlessly in one shot.
+"Step 1: Read this. Step 2: Extract X. Step 3: Transform to Y. Step 4: Validate against Z... [Step 50]"
+Result: The model suffers from "Lost in the Middle" syndrome, skipping steps 20-30 completely.
+```
 
-#### 3. High Temperature in RAG
-Setting `temperature=1.0` for a system meant to relay internal data.
-**Result**: Inevitable hallucinations as the model tries to "embellish" the answer.
-**Fix**: set `temperature=0.0`.
+```text
+✅ GOOD: Using Agentic Workflows or Chain-of-Thought architecture.
+Break the task down into a directed acyclic graph (DAG) of smaller LLM calls, or give the LLM tool access to execute and verify one step at a time.
+```
 
-#### 4. Hardware Misalignment
-Running a 70B model in Full FP16 on a machine with 128GB RAM.
-**Result**: The system will crash or use "Swap" space, leading to 1 token per hour.
-**Fix**: Use **Quantization** (4-bit) to fit large models in consumer VRAM.
+#### 2. High-Temperature RAG (Retrieval-Augmented Generation)
 
----
+```text
+❌ BAD: Setting a high temperature when retrieving strict factual enterprise data.
+llm = ChatModel(temperature=0.8) # Creative/Random
+Result: The LLM will "creatively embellish" the retrieved data, introducing severe hallucinations into financial or medical reports.
+```
+
+```text
+✅ GOOD: Forcing deterministic outputs for factual synthesis.
+llm = ChatModel(temperature=0.0) # Highly deterministic, focused purely on highest-probability tokens.
+```
+
+#### 3. Ignoring the Tokenization Paradox in Search
+
+```text
+❌ BAD: Assuming LLMs read text letter-by-letter.
+Searching a vector database using a different tokenizer than the embedding model. "2026" might be tokenized as ["20", "26"] by one model and ["202", "6"] by another.
+Result: Semantic search fails entirely because the numerical representations mismatch at the foundational layer.
+```
+
+```text
+✅ GOOD: Unified Embedding architecture.
+Ensure your ingestion pipeline, retrieval pipeline, and LLM context window all utilize the exact same tokenizer encoding (e.g., `cl100k_base` or `o200k_base`).
+```
+
+#### 4. Hardware & Quantization Misalignment
+
+```text
+❌ BAD: Attempting to deploy a massive 120B parameter dense model in Full FP16 precision on standard consumer hardware.
+Result: The model requires ~240GB of VRAM. It will spill over into system RAM (Swap), resulting in generation speeds of 0.5 Tokens-Per-Second.
+```
+
+```text
+✅ GOOD: Utilizing native 2026 Quantization techniques.
+Deploy an INT4 quantized version of the model, or use a Mixture-of-Experts architecture that only requires 16GB of active VRAM per inference step, achieving 50+ TPS on commodity hardware.
+```
 
 ## Related Patterns
 
-### Complementary Patterns
-
-- [Vector Databases](./05-Vector-Databases.md) - Storing semantic context.
-- [AI Evaluations](./04-AI-Evaluations.md) - Testing prompt outputs.
-- [MLOps Pipeline](./03-MLOps-Pipeline.md) - Managing model deployment.
-- [Observability](../10-Observability/01-Logging.md) - Tracing token usage.
-
----
-
-## Glossary of Key AI Terms
-
-- **Attention Mechanism**: Assigning importance to different parts of the input.
-- **Context Window**: Total tokens the model can "see" at once.
-- **Embeddings**: Mapping text to N-dimensional numerical space.
-- **Fine-Tuning**: Training a pre-trained model on specific data.
-- **HNSW**: Hierarchical Navigable Small Worlds (Fast vector search).
-- **Inference**: The process of using a model to generate text.
-- **KV Cache**: Key-Value cache for faster generation.
-- **LPU**: Language Processing Unit (Specialized chips like Groq).
-- **MoE**: Mixture of Experts (Sparse model design).
-- **Model Drift**: Change in behavior after a provider updates weights.
-- **Next Token Prediction**: The fundamental goal of an LLM.
-- **Parametric Knowledge**: Info embedded in the model weights.
-- **Quantization**: Lowering weight precision to save memory.
-- **RAG**: Retrieval-Augmented Generation.
-- **RLHF**: Reinforcement Learning from Human Feedback.
-- **SFT**: Supervised Fine-Tuning.
-- **Softmax**: Probability distribution function.
-- **Temperature**: Randomness setting.
-- **Tokenizer**: Splits text into numbers.
-- **Weights**: The learned numbers in the model layers.
-- **Zero-Shot**: Task solving without examples.
-
----
-
-## Conclusion & Future Outlook
-
-The LLM Architecture is the cornerstone of the AI era. As we move from **Dense Transformers** to **Sparse Experts (MoE)** and eventually to **State Space Models (SSM)**, the core challenge remains: how to most efficiently map human intent to digital action. Mastering the relationship between Attention, Context, and RAG is no longer optional for software engineers—it is the baseline for the next generation of computing.
+* **[Vector Database Architecture](./05-Vector-Databases.md)** - Essential infrastructure for managing high-dimensional embeddings and powering RAG.
+* **[Agentic Workflows](./06-Agentic-Workflows.md)** - How to chain multiple LLM calls together to create autonomous systems.
+* **[MLOps Pipeline](./03-MLOps-Pipeline.md)** - Managing model deployment, continuous evaluation (Evals), and dataset versioning.
+* **[Event-Driven Architecture](./04-Event-Driven-Architecture.md)** - Often paired with LLMs; events trigger AI reasoning, and AI decisions emit events.
+* **[Prompt Engineering Paradigms](../03-Paradigms/04-Prompt-Engineering.md)** - The software engineering discipline of optimizing inputs for Transformer models.

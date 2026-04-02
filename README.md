@@ -83,12 +83,17 @@ A comprehensive markdown-based knowledge base covering all known useful coding p
 - [04-Feature-Flags](11-DevOps/04-Feature-Flags.md) - Gradual rollouts
 - [05-Release-Management](11-DevOps/05-Release-Management.md) - Versioning
 
-### AI (Category 12) (WORK IN PROGRESS)
-- [01-LLM-Architecture](12-AI/01-LLM-Architecture.md) - Transformers, SSMs, and reasoning engines
-- [02-AI-Agentic-Workflows](12-AI/02-AI-Agentic-Workflows.md) - Autonomous agents and multi-agent orchestration
-- [03-MLOps-Pipeline](12-AI/03-MLOps-Pipeline.md) - Lifecycle management for 2026-standard models
-- [04-AI-Evaluations](12-AI/04-AI-Evaluations.md) - LLM-as-a-Judge and RAGAS metrics
-- [05-Vector-Databases](12-AI/05-Vector-Databases.md) - Embeddings, HNSW, and neural memory stores
+### AI (Category 12)
+- [01-LLM-Architecture](12-AI/01-LLM-Architecture.md) - **Reasoning Engines**: Deep dive into the mechanics of 2026 frontier models. Covers **Hybrid Transformer-SSMs**, Mixture-of-Experts (MoE) routing, Long-Context window management (10M+ tokens), and native Multi-modality.
+- [02-AI-Agentic-Workflows](12-AI/02-AI-Agentic-Workflows.md) - **Autonomous Orchestration**: Design patterns for multi-agent swarms. Includes **State-Graph orchestration**, System 2 "Tree-of-Thought" planning, and secure tool-use integration within sandboxed environments.
+- [03-MLOps-Pipeline](12-AI/03-MLOps-Pipeline.md) - **Lifecycle Automation**: The CI/CD for AI. Manages **PEFT/LoRA adapter registries**, continuous DPO (Direct Preference Optimization) alignment loops, and dynamic inference routing across quantized model tiers.
+- [04-AI-Evaluations](12-AI/04-AI-Evaluations.md) - **Semantic QA**: Moving beyond unit tests to **Evaluation-Driven Development (EDD)**. Utilizes "LLM-as-a-Judge," RAGAS metrics for grounding, and automated adversarial red-teaming to quantify model reliability.
+- [05-Vector-Databases](12-AI/05-Vector-Databases.md) - **Neural Memory Store**: Architecture of high-dimensional neural search. Covers **DiskANN** for trillion-scale retrieval, Matryoshka embeddings for dynamic dimensionality, and Hybrid-Graph fusion (GraphRAG).
+- [06-AI-Security-Guardrails](12-AI/06-AI-Security-Guardrails.md) - **Cognitive Defense**: Security layers for the AI era. Focuses on **Prompt Injection mitigation**, PII redaction (DLP), semantic input/output filtering, and hardware-isolated execution sandboxes for agents.
+- [07-Advanced-RAG-Architectures](12-AI/07-Advanced-RAG-Architectures.md) - **Contextual Synthesis**: Advanced retrieval patterns including **HyDE (Hypothetical Document Embeddings)**, Multi-hop reasoning, Query Decomposition, and Cross-Encoder Re-ranking for zero-hallucination outputs.
+- [08-Edge-AI-and-SLMs](12-AI/08-Edge-AI-and-SLMs.md) - **Local Intelligence**: Architecture for running **Small Language Models (SLMs)** on-device. Covers NPU/TPU optimization, WebGPU browser-inference, and 1.58-bit (ternary) quantization for privacy-first, offline AI.
+- [09-Generative-UX-and-Streaming](12-AI/09-Generative-UX-and-Streaming.md) - **Real-time Interaction**: Design patterns for **Generative UI**. Focuses on Server-Sent Events (SSE) for token streaming, Optimistic UI updates, and streaming React Server Components mid-generation.
+- [10-Software-Factories](12-AI/10-Software-Factories.md) - **Industrialized SDLC**: The ultimate automation of engineering. Orchestrates agents to ingest PRDs and output fully-tested, peer-reviewed, and deployed codebases with minimal human intervention.
 
 ## 🏗️ Architecture
 
@@ -126,9 +131,9 @@ Each content file contains exactly 8 sections:
 
 | Metric | Value |
 |--------|-------|
-| Total Files | 62 |
+| Total Files | 69 |
 | Root Files | 2 |
-| Content Files | 60 |
+| Content Files | 67 |
 | Categories | 12 |
 | Sections per File | 8 |
 

@@ -80,12 +80,17 @@ This knowledge base is a modular, cross-referenced documentation system covering
 │   ├── 03-Config-Management.md
 │   ├── 04-Feature-Flags.md
 │   └── 05-Release-Management.md
-└── 12-AI/                                      # 5 files - AI engineering
+└── 12-AI/                                      # 10 files - AI engineering
     ├── 01-LLM-Architecture.md
     ├── 02-AI-Agentic-Workflows.md
     ├── 03-MLOps-Pipeline.md
     ├── 04-AI-Evaluations.md
-    └── 05-Vector-Databases.md
+    ├── 05-Vector-Databases.md
+    ├── 06-AI-Security-Guardrails.md
+    ├── 07-Advanced-RAG-Architectures.md
+    ├── 08-Edge-AI-and-SLMs.md
+    ├── 09-Generative-UX-and-Streaming.md
+    └── 10-Software-Factories.md
 ```
 
 ## 📊 File Statistics
@@ -103,10 +108,10 @@ This knowledge base is a modular, cross-referenced documentation system covering
 | Infrastructure | 5 | 01-05 |
 | Observability | 5 | 01-05 |
 | DevOps | 5 | 01-05 |
-| AI | 5 | 01-05 |
-| **Content Files** | **60** | |
+| AI | 10 | 01-10 |
+| **Content Files** | **67** | |
 | **Root Files** | **2** | README.md, ARCHITECTURE.md |
-| **Total** | **62** | |
+| **Total** | **69** | |
 
 ## 📐 Content Structure Template
 
