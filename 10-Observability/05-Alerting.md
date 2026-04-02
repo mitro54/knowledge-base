@@ -311,10 +311,10 @@ Alerts that fire with "Service Error" but provide no link to logs, dashboards, o
 
 ### Complementary Patterns
 
-- [Monitoring](10-Observability/02-Monitoring.md) - The data source for all alerting rules.
-- [Logging](10-Observability/01-Logging.md) - Used to provide detailed context to alert notifications.
-- [Metrics](10-Observability/04-Metrics.md) - Quantitative data for objective threshold settings.
-- [Tracing](10-Observability/03-Tracing.md) - Helps identify *where* in a request chain a failure occurred.
+- [Monitoring](./10-Observability/02-Monitoring.md) - The data source for all alerting rules.
+- [Logging](./10-Observability/01-Logging.md) - Used to provide detailed context to alert notifications.
+- [Metrics](./10-Observability/04-Metrics.md) - Quantitative data for objective threshold settings.
+- [Tracing](./10-Observability/03-Tracing.md) - Helps identify *where* in a request chain a failure occurred.
 
 ### Alternative Approaches
 
@@ -331,6 +331,6 @@ Alerts that fire with "Service Error" but provide no link to logs, dashboards, o
 
 ### See Also
 
-- [SLOs and SLIs](04-Best-Practices/03-Design-Principles.md) - Fundamental concepts for defining what "good" looks like.
-- [Incident Management](11-DevOps/05-Release-Management.md) - The process that begins when an alert fires.
-- [Chaos Engineering](05-Safety-Engineering/02-Fault-Tolerance.md) - Testing your alerting by intentionally failing systems.
+- [SLOs and SLIs](../04-Best-Practices/03-Design-Principles.md) - Fundamental concepts for defining what "good" looks like.
+- [Incident Management](../11-DevOps/05-Release-Management.md) - The process that begins when an alert fires.
+- [Chaos Engineering](../05-Safety-Engineering/02-Fault-Tolerance.md) - Testing your alerting by intentionally failing systems.
