@@ -288,6 +288,6 @@ Changing a flag state in production without first testing that specific state in
 
 ### See Also
 
-- [Twelve-Factor App](04-Best-Practices/03-Design-Principles.md) - Externalizing configuration.
-- [Testing Pyramid](06-Testing-Engineering/01-Testing-Pyramid.md) - How to test both states of a flag efficiently.
-- [Trunk-Based Development](04-Best-Practices/05-Code-Organization.md) - The workflow that most benefits from feature flags.
+- [Twelve-Factor App](../04-Best-Practices/03-Design-Principles.md) - Externalizing configuration.
+- [Testing Pyramid]../(06-Testing-Engineering/01-Testing-Pyramid.md) - How to test both states of a flag efficiently.
+- [Trunk-Based Development](../04-Best-Practices/05-Code-Organization.md) - The workflow that most benefits from feature flags.

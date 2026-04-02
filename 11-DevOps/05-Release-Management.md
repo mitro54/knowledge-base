@@ -260,7 +260,7 @@ Releasing a new version without having a one-click command to go back.
 - [CI/CD Pipeline](./01-CI-CD.md) - The transport layer for the release.
 - [Deployment Strategies](./02-Deployment-Strategies.md) - How the "Release Rollout" actually happens.
 - [Feature Flags](./04-Feature-Flags.md) - Allows code to be "Released" (live) but not "Visible" (enabled).
-- [Observability](10-Observability/02-Monitoring.md) - Essential for validating a release's success.
+- [Observability](../10-Observability/02-Monitoring.md) - Essential for validating a release's success.
 
 ### Alternative Approaches
 
