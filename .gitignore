@@ -1,0 +1,9 @@
+node_modules/
+.git/
+.venv/
+venv/
+.cline_logs/
+.cline_context/
+__pycache__/
+.pytest_cache/
+*.log
