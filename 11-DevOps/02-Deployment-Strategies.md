@@ -1,192 +1,172 @@
 # Deployment Strategies
 
-## Overview
+Deployment strategies are formal approaches for releasing new versions of applications to production environments while managing risk and availability.
 
-Deployment strategies are approaches for releasing new versions of applications to production environments. Different strategies balance risk, downtime, complexity, and cost to meet organizational requirements for reliability and speed of delivery.
+## Summary
 
-### Key Characteristics
-- **Risk Mitigation**: Minimize impact of failed deployments
-- **Rollback Capability**: Ability to revert to previous version
-- **Downtime Management**: Control over service availability during deployment
-- **Traffic Control**: Managing user traffic during transitions
-- **Resource Efficiency**: Optimizing infrastructure usage during deployment
+Deployment strategies define the mechanics of how software is transitioned from a staged artifact to a live, user-facing service. In modern DevOps, the choice of strategy is driven by the need to balance deployment frequency with system reliability. High-performing teams utilize automated strategies like Blue-Green or Canary deployments to achieve zero-downtime releases and rapid rollback capabilities. The objective is to decouple the process of "deployment" (installing the code) from "release" (exposing it to users), thereby reducing the blast radius of potential failures.
+
+**Key Characteristics:**
+- **Risk Mitigation**: Strategies designed to minimize the impact of failed deployments on the user base.
+- **Rollback Capability**: The ability to instantly revert to a previously known good state.
+- **Downtime Management**: Eliminating or strictly controlling service unavailability during transitions.
+- **Traffic Control**: Granular management of user requests (sharding, weighting) during the rollout.
+- **Resource Efficiency**: Optimizing the use of compute resources (CPU, Memory) during the upgrade process.
+- **Automation First**: Every stage of the deployment is defined as code (e.g., K8s controller logic).
 
 ---
 
 ## Problem Statement
 
-Deploying new versions of applications presents several challenges:
+### The Challenge
 
-- **Service Downtime**: Users cannot access the application during deployment
-- **Deployment Failures**: Bugs or configuration errors can break production
-- **Data Migration Issues**: Schema changes may fail or corrupt data
-- **State Management**: In-flight requests may be lost during transitions
-- **Rollback Complexity**: Reverting changes can be as complex as the original deployment
-- **User Impact**: All users affected simultaneously by any issues
+Updating live software systems is inherently risky. Traditional "replace and restart" methods often lead to service outages, state corruption, and inconsistent user experiences. Without a structured deployment strategy, teams are forced into "Big Bang" releases that are difficult to test in production conditions and even harder to roll back when things go wrong.
 
-### Consequences
-- Lost revenue during downtime
-- Damaged user trust and reputation
-- Emergency hotfixes under pressure
-- Team burnout from deployment anxiety
-- Difficulty meeting SLA requirements
+### Context
+
+- **Historical Context**: Early web services required "Maintenance Mode" pages during deployments, stopping all business operations.
+- **Technical Context**: Modern cloud-native applications run across hundreds of containers; updating them one-by-one requires sophisticated orchestration.
+- **Business Context**: In the 24/7 global economy, even 10 minutes of downtime can result in massive revenue loss and brand damage.
+
+### Consequences of Not Addressing
+
+- **Service Downtime**: Users cannot access critical functionality during updates, violating SLAs.
+- **Deployment Failures**: Small bugs in new versions can propagate to 100% of the user base instantly.
+- **Data Migration Issues**: Schema changes can break old application versions if not managed with "Expand/Contract" patterns.
+- **State Management Failures**: In-flight requests or active sessions are dropped during restarts.
+- **Rollback Complexity**: Manual "undo" operations are error-prone and slow.
+- **Team Fatigue**: High-stakes, manual deployments lead to developer burnout and avoidance of frequent releases.
 
 ---
 
 ## Solution
 
-Different deployment strategies address these challenges in various ways:
+### The Multi-Strategy Approach
 
-### Big Bang Deployment
-Deploy entire new version at once, replacing the old version completely.
-
-```
-[Old Version] → [Downtime] → [New Version]
-```
-
-### Rolling Deployment
-Gradually replace instances with new version while maintaining availability.
+Deployment strategies provide controlled mechanisms to transition between Version A (Stable) and Version B (New). The selection of a strategy depends on infrastructure capabilities and risk tolerance.
 
 ```
-[Old: ●●●●] → [Old: ●●●○] → [Old: ●●○○] → [New: ○○○○]
+      Traditional (High Risk)              Modern (Low Risk)
+    ┌─────────────────────────┐        ┌─────────────────────────┐
+    │       Big Bang          │        │      Blue-Green         │
+    │  [Old] ─▶ [Off] ─▶ [New]│        │  [Blue] ─◀─▶ [Green]    │
+    └─────────────────────────┘        └─────────────────────────┘
+                 │                                  │
+                 ▼                                  ▼
+    ┌─────────────────────────┐        ┌─────────────────────────┐
+    │       Rolling           │        │       Canary            │
+    │  ●●●● ─▶ ●●●○ ─▶ ○○○○   │        │  100% ─▶ 90/10 ─▶ 100%  │
+    └─────────────────────────┘        └─────────────────────────┘
 ```
 
-### Blue-Green Deployment
-Maintain two identical environments; switch traffic between them.
+### Core Strategies
 
-```
-Blue (Active) ← Traffic → Green (Standby)
-         Switch Traffic
-Blue (Standby) ← Traffic → Green (Active)
-```
+1. **Recreate (Big Bang)**: Terminate version A then start version B. Simple but involves downtime.
+2. **Rolling Update**: Incrementally replace instances of version A with version B. Used by default in Kubernetes.
+3. **Blue-Green**: Run two identical environments. Switch traffic from one to the other at the router/load-balancer level.
+4. **Canary**: Release version B to a small subset of users first, then progressively widen the rollout based on telemetry.
+5. **Shadow**: Mirror production traffic to version B in the background to validate performance without user impact.
+6. **A/B Testing**: Route traffic based on user attributes (e.g., location, tier) to measure product-specific outcomes.
 
-### Canary Deployment
-Gradually route increasing traffic to new version.
+### How It Addresses the Problem
 
-```
-100% Old → 90% Old / 10% New → 50/50 → 10% Old / 90% New → 100% New
-```
-
-### Shadow Deployment
-Route copy of production traffic to new version without affecting users.
-
-```
-User → Load Balancer → Production (responses sent)
-                ↳ Shadow (responses discarded)
-```
-
-### A/B Testing Deployment
-Route traffic based on user segments for comparison testing.
-
-```
-User A → Version A
-User B → Version B
-Compare metrics and user behavior
-```
+- **Zero Downtime**: Modern strategies use overlapping lifecycle management to keep services available.
+- **Validation in Production**: Canary and Shadow strategies allow for "testing in prod" with zero risk.
+- **Instant Rollback**: Blue-Green allows for an immediate switch back to the "Blue" environment if "Green" fails.
+- **Reduced Blast Radius**: Canary limits the impact of bugs to a tiny percentage of users.
 
 ---
 
 ## When to Use
 
-### Big Bang Deployment
-**Use when:**
-- Small applications with minimal user base
-- Acceptable maintenance windows exist
-- Simple applications without complex state
-- Limited infrastructure resources
+### Appropriate Scenarios
 
-**Avoid when:**
-- High availability is critical
-- Large user base with global distribution
-- Complex state management required
+| Strategy | Suitability | Risk Level | Infrastructure Cost |
+|----------|-------------|------------|---------------------|
+| Big Bang | ⭐ (Legacy/Dev) | High | Low |
+| Rolling | ⭐⭐⭐ (General) | Medium | Medium |
+| Blue-Green | ⭐⭐⭐⭐⭐ (Zero-Downtime) | Low | High (2x) |
+| Canary | ⭐⭐⭐⭐⭐ (Critical) | Lowest | Medium |
+| Shadow | ⭐⭐⭐⭐ (Perf Validation) | Lowest | High |
 
-### Rolling Deployment
-**Use when:**
-- Stateless applications
-- Database schema is backward compatible
-- Moderate availability requirements
-- Limited infrastructure budget
+### Prerequisites
 
-**Avoid when:**
-- Zero downtime is mandatory
-- Complex state synchronization needed
-- Database migrations required
+- **Orchestration**: A system like Kubernetes, ECS, or Nomad to manage container lifecycles.
+- **Service Discovery**: Automated way for clients/load balancers to find new instances.
+- **Health Probes**: Automated "Liveness" and "Readiness" checks.
+- **Externalized State**: Sessions and databases must be decoupled from app instances.
+- **Infrastructure as Code (IaC)**: Reproducible environment definitions.
 
-### Blue-Green Deployment
-**Use when:**
-- Zero downtime is required
-- Quick rollback is essential
-- Sufficient infrastructure for duplicate environment
-- State is externalized (database, cache)
+### Indicators for Suitability
 
-**Avoid when:**
-- Infrastructure costs are a major concern
-- State is stored in application instances
-- Database schema changes break backward compatibility
-
-### Canary Deployment
-**Use when:**
-- Risk mitigation is critical
-- Traffic routing capabilities exist
-- Monitoring and metrics are available
-- Gradual validation is important
-
-**Avoid when:**
-- Simple applications with low risk
-- No traffic routing infrastructure
-- Immediate full rollout is required
-
-### Shadow Deployment
-**Use when:**
-- Performance validation needed
-- Complex system behavior must be tested
-- Production-like traffic patterns required
-- No user impact acceptable during testing
-
-**Avoid when:**
-- Write operations need testing
-- Infrastructure for traffic duplication unavailable
-- Quick validation needed
-
-### A/B Testing Deployment
-**Use when:**
-- Feature comparison needed
-- User behavior analysis required
-- Data-driven decisions important
-- Marketing or UX changes being tested
-
-**Avoid when:**
-- Backend-only changes
-- Performance improvements
-- Bug fixes
+- **SLA Requirements**: If 99.9% uptime is required, Blue-Green or Canary is mandatory.
+- **Traffic Volume**: High-traffic systems benefit most from Canary to detect subtle performance regressions.
+- **Resource Constraints**: If you cannot afford 2x infrastructure, Rolling is the best compromise.
+- **Release Frequency**: Multiple daily deployments require fully automated, low-risk strategies (Canary).
 
 ---
 
 ## Tradeoffs
 
-| Strategy | Downtime | Complexity | Cost | Rollback Speed | Risk Level |
-|----------|----------|------------|------|----------------|------------|
-| Big Bang | High | Low | Low | Medium | High |
-| Rolling | Low | Medium | Medium | Medium | Medium |
-| Blue-Green | None | Medium | High | Fast | Low |
-| Canary | None | High | Medium | Medium | Low |
-| Shadow | None | High | High | N/A | Lowest |
-| A/B Testing | None | High | Medium | Medium | Low |
+### Advantages
+
+| Strategy | Key Advantage | Description |
+|----------|---------------|-------------|
+| **Big Bang** | Simplicity | No state synchronization or version overlap issues. |
+| **Rolling** | Resource Neutral | Doesn't require extra servers; uses current capacity. |
+| **Blue-Green** | Instant Rollback | Reverting is as simple as flipping a load balancer switch. |
+| **Canary** | Blast Radius Control | Caught bugs only affect 1-5% of traffic. |
+| **Shadow** | Real-world Load | Tests system behavior with actual production data. |
+| **A/B Testing** | Data-driven | Validates business metrics (conversion, engagement). |
+
+### Disadvantages
+
+| Strategy | Key Drawback | Description |
+|----------|--------------|-------------|
+| **Big Bang** | Downtime | Complete service interruption during deploy. |
+| **Rolling** | Slow Rollback | Must roll back instance by instance, taking time. |
+| **Blue-Green** | Cost | Requires doubling your server count during deploy. |
+| **Canary** | Complexity | Requires advanced traffic routing (Service Mesh). |
+| **Shadow** | Write Complexity | Hard to test stateful operations (DB writes) without side effects. |
+| **A/B Testing** | Overlap Issues | Can lead to data inconsistency for users switching segments. |
 
 ### Performance Considerations
-- **Blue-Green**: Requires 2x infrastructure capacity
-- **Canary**: Traffic routing adds latency overhead
-- **Rolling**: Brief performance degradation during transition
-- **Shadow**: Requires additional resources for shadow instances
+
+- **Initialization Latency**: New versions often have "cold start" performance dips. Rolling updates must account for this via "minReadySeconds".
+- **Network Overhead**: Shadow deployments double the incoming traffic load on the network layer.
+- **Database Load**: Blue-Green switches can cause a sudden surge of connections to the shared database.
+
+### Complexity Implications
+
+- **Initial Complexity**: Rolling is built-in to most tools; Canary requires Istio/Linkerd.
+- **Operational Complexity**: Canary requires automated "judgment" (checking metrics and auto-promoting).
+- **Automation Level**: High—manual Blue-Green is dangerous; it must be fully scripted or orchestrated.
 
 ---
 
 ## Implementation Example
 
+### Basic Project Structure for Deployment
+
+```
+deployment-infra/
+├── k8s/
+│   ├── base/               # Stable definitions
+│   ├── blue-green/         # Strategy overlays
+│   └── canary/             # Istio/Flagger configs
+├── scripts/
+│   ├── deploy-rolling.sh   # Default script
+│   └── promote-canary.sh   # Evaluation logic
+└── monitoring/
+    └── deployment-health.promql # Health validation queries
+```
+
 ### Blue-Green Deployment (Kubernetes)
 
+Using labels to switch traffic between two distinct deployments.
+
 ```yaml
-# Blue environment (current production)
+# 1. The Production Service (pointing to Blue)
 apiVersion: v1
 kind: Service
 metadata:
@@ -194,12 +174,13 @@ metadata:
 spec:
   selector:
     app: myapp
-    version: blue
+    version: blue # Change this to 'green' to switch traffic
   ports:
     - port: 80
       targetPort: 8080
 
 ---
+# 2. Blue Deployment (v1.0.0)
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -221,7 +202,7 @@ spec:
         image: myapp:1.0.0
 
 ---
-# Green environment (new version, standby)
+# 3. Green Deployment (v2.0.0 - Standby)
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -243,51 +224,29 @@ spec:
         image: myapp:2.0.0
 ```
 
-**Deployment Script:**
+**Traffic Switch Script:**
 ```bash
 #!/bin/bash
-# Blue-Green Deployment Script
+# Blue-Green Traffic Switcher
 
-set -e
+# 1. Verify Green is ready
+kubectl rollout status deployment/myapp-green
 
-NEW_VERSION="2.0.0"
-CURRENT_ENV="blue"
-NEW_ENV="green"
+# 2. Run Smoke Tests
+curl -s http://myapp-green:8080/health | grep "UP" || exit 1
 
-# 1. Deploy new version to standby environment
-echo "Deploying version $NEW_VERSION to $NEW_ENV environment..."
-kubectl set image deployment/myapp-$NEW_ENV myapp=myapp:$NEW_VERSION
+# 3. Flip the Switch
+kubectl patch service myapp-production -p '{"spec":{"selector":{"version":"green"}}}'
 
-# 2. Wait for readiness
-echo "Waiting for $NEW_ENV environment to be ready..."
-kubectl rollout status deployment/myapp-$NEW_ENV
-
-# 3. Run smoke tests against new environment
-echo "Running smoke tests..."
-curl -f http://myapp-$NEW_ENV.health-check.local/health || {
-    echo "Smoke tests failed! Rolling back..."
-    exit 1
-}
-
-# 4. Switch traffic by updating service selector
-echo "Switching traffic from $CURRENT_ENV to $NEW_ENV..."
-kubectl patch service myapp-production -p "{\"spec\":{\"selector\":{\"version\":\"$NEW_ENV\"}}}"
-
-# 5. Verify switch
-echo "Verifying deployment..."
-sleep 10
-curl -f http://myapp-production.local/health
-
-echo "Deployment complete!"
-
-# 6. Cleanup old environment (optional, after verification period)
-# kubectl delete deployment/myapp-$CURRENT_ENV
+echo "Traffic successfully routed to Green (v2.0.0)"
 ```
 
-### Canary Deployment (Istio)
+### Canary Deployment (Istio Service Mesh)
+
+Using weighted routing to gradually introduce a new version.
 
 ```yaml
-# VirtualService for canary deployment
+# Istio VirtualService for Traffic Weighting
 apiVersion: networking.istio.io/v1beta1
 kind: VirtualService
 metadata:
@@ -299,187 +258,96 @@ spec:
   - route:
     - destination:
         host: myapp
-        subset: v2  # New version (canary)
-      weight: 10    # 10% traffic
+        subset: v2  # Canary
+      weight: 10    # 10% Traffic
     - destination:
         host: myapp
-        subset: v1  # Old version (stable)
-      weight: 90    # 90% traffic
-    - match:
-      - headers:
-          canary:
-            exact: "true"
-      route:
-      - destination:
-          host: myapp
-          subset: v2
-        weight: 100  # Internal traffic always goes to canary
+        subset: v1  # Stable
+      weight: 90    # 90% Traffic
 ```
 
-**Progressive Canary Rollout Script:**
-```bash
-#!/bin/bash
-# Progressive Canary Rollout
-
-CANARY_PERCENTAGES=(10 25 50 75 100)
-SLEEP_BETWEEN_STEPS=300  # 5 minutes
-
-for percentage in "${CANARY_PERCENTAGES[@]}"; do
-    echo "Setting canary to ${percentage}%"
-    
-    # Update Istio VirtualService
-    istioctl apply -f - <<EOF
-apiVersion: networking.istio.io/v1beta1
-kind: VirtualService
-metadata:
-  name: myapp-canary
-spec:
-  hosts:
-  - myapp
-  http:
-  - route:
-    - destination:
-        host: myapp
-        subset: v2
-      weight: $percentage
-    - destination:
-        host: myapp
-        subset: v1
-      weight: $((100 - percentage))
-EOF
-
-    # Check error rates and metrics
-    ERROR_RATE=$(get_error_rate_metric "myapp-v2")
-    
-    if (( $(echo "$ERROR_RATE > 0.01" | bc -l) )); then
-        echo "Error rate ($ERROR_RATE) exceeds threshold (1%)! Rolling back..."
-        rollback_canary
-        exit 1
-    fi
-
-    echo "Canary at ${percentage}% - Error rate: $ERROR_RATE - OK"
-    
-    if [ $percentage -lt 100 ]; then
-        echo "Waiting ${SLEEP_BETWEEN_STEPS}s before next step..."
-        sleep $SLEEP_BETWEEN_STEPS
-    fi
-done
-
-echo "Canary deployment complete! 100% traffic on new version."
-```
-
-### Rolling Deployment (Kubernetes)
+### Rolling Update (Standard K8s Strategy)
 
 ```yaml
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: myapp
 spec:
-  replicas: 6
   strategy:
     type: RollingUpdate
     rollingUpdate:
-      maxSurge: 2          # Maximum extra pods during update
-      maxUnavailable: 1    # Maximum pods that can be unavailable
-  selector:
-    matchLabels:
-      app: myapp
-  template:
-    metadata:
-      labels:
-        app: myapp
-    spec:
-      containers:
-      - name: myapp
-        image: myapp:2.0.0
-        readinessProbe:
-          httpGet:
-            path: /health
-            port: 8080
-          initialDelaySeconds: 10
-          periodSeconds: 5
+      maxSurge: 25%       # Allow 25% extra pods during deploy
+      maxUnavailable: 0   # Ensure zero downtime by never killing a pod before its replacement is ready
 ```
 
 ---
 
 ## Anti-Pattern
 
-### Common Mistakes and Pitfalls
+### Common Mistakes
 
-#### ❌ Database Schema Changes Without Migration Strategy
-```bash
-# ANTI-PATTERN: Changing schema during deployment
-# Version 1.0 expects: users(id, name, email)
-# Version 2.0 expects: users(id, name, email, phone) ← New column
-
-# If deployment fails halfway, database is in inconsistent state!
+#### 1. Database Schema Mismatch
+Deploying a new code version that requires a new database column BEFORE the column exists.
+```php
+// ❌ ANTI-PATTERN: Code assumes column exists
+$user->phone = $request->phone; // Crashes if DB hasn't been migrated yet
 ```
+**Fix**: Use the "Expand and Contract" pattern where DB changes are backward compatible.
 
-**Correct Approach:**
-```sql
--- Expand/Contract pattern
--- Phase 1: Expand (backward compatible)
-ALTER TABLE users ADD COLUMN phone VARCHAR(20);
-
--- Deploy version 2.0 (reads/writes both old and new schema)
-
--- Phase 2: Contract (after verification)
--- Remove old code paths, then eventually remove old columns
+#### 2. Ignoring Health Probes
+Proceeding with a rolling update even when new pods are crashing.
+```yaml
+# ❌ ANTI-PATTERN: No readiness probe
+containers:
+- name: app
+  image: broken-image:latest
+# K8s will still kill old pods as soon as containers start, leading to total outage
 ```
+**Fix**: Always define `readinessProbe` and `livenessProbe`.
 
-#### ❌ Stateful Blue-Green Without State Migration
-```
-Blue: User sessions stored in app memory
-Green: New instances, no session data
-Result: All users logged out after switch!
-```
+#### 3. Stateful Blue-Green
+Switching traffic from Blue to Green when user sessions are stored in Blue's local memory.
+**Result**: Every user is logged out and loses their shopping cart.
+**Fix**: Use a distributed session store (Redis) or sticky sessions.
 
-**Correct Approach:**
-- Externalize state to Redis, database, or distributed cache
-- Use sticky sessions during transition
-- Implement session migration strategy
+### Warning Signs
 
-#### ❌ Canary Without Proper Monitoring
-```bash
-# ANTI-PATTERN: No validation between canary steps
-for pct in 10 25 50 75 100; do
-    set_canary $pct
-    sleep 10  # Not enough time to detect issues!
-done
-```
+- **"Release Windows"**: You are only allowed to deploy at 3:00 AM on Sundays.
+- **Rollback Fear**: Rolling back a deployment takes longer than 15 minutes.
+- **Inconsistent Tests**: Smoke tests pass but real users experience immediate errors.
+- **Manual Load Balancer Updates**: Someone has to log into a console to point to new IPs.
 
-**Correct Approach:**
-```bash
-for pct in 10 25 50 75 100; do
-    set_canary $pct
-    wait_for_stability  # Wait for metrics to stabilize
-    check_error_rates   # Verify error rates acceptable
-    check_latency       # Verify latency within bounds
-    check_business_metrics  # Verify key metrics healthy
-done
-```
+### What NOT to Do
 
-#### ❌ Ignoring In-Flight Requests
-Switching traffic while requests are being processed causes request failures.
-
-#### ❌ No Health Checks Between Steps
-Proceeding with deployment without verifying each step's success.
+1. **Don't** assume a successful container start means a successful deployment. Verify business logic.
+2. **Don't** perform a Big Bang deploy on any service with an uptime SLA > 90%.
+3. **Don't** skip staging. Testing in prod via Canary is a *supplement* to staging, not a replacement.
+4. **Don't** leave old Blue versions running forever; clean up orphans to save cost.
+5. **Don't** ignore the database. Deployment strategies MUST include a data migration plan.
 
 ---
 
 ## Related Patterns
 
-### See Also
-- [CI/CD](./01-CI-CD.md) - Pipeline automation for deployments
-- [Feature Flags](./04-Feature-Flags.md) - Controlling feature availability
-- [Release Management](./05-Release-Management.md) - Coordinating releases
-
 ### Complementary Patterns
-- [Service Mesh](09-Infrastructure/04-Service-Mesh.md) - Traffic management capabilities
-- [Orchestration](09-Infrastructure/02-Orchestration.md) - Container management
-- [Fault Tolerance](05-Safety-Engineering/02-Fault-Tolerance.md) - Handling deployment failures
+
+- [CI/CD Pipeline](./01-CI-CD.md) - The automation trigger for deployment strategies.
+- [Feature Flags](./04-Feature-Flags.md) - Allows code deployment without functional release.
+- [Circuit Breaker](05-Safety-Engineering/02-Fault-Tolerance.md) - Protects against cascading failures during rollout.
+- [Observability](10-Observability/02-Monitoring.md) - Essential for Canary analysis and rollbacks.
 
 ### Alternative Approaches
-- [Event-Driven Architecture](01-System-Design/03-Event-Driven-Architecture.md) - Asynchronous deployment triggers
-- [Microservices Architecture](01-System-Design/02-Microservices-Architecture.md) - Independent service deployment
+
+- **GitOps**: Using tools like ArgoCD to implement these strategies via Git state.
+- **Manual Promotion**: For high-regulation environments (Banking/Medical).
+- **Serverless**: Where the provider handles the deployment strategy (e.g., AWS Lambda Aliases).
+
+### Evolution Path
+
+- **Manual Restart**: High risk, high downtime.
+- **Scripted Rolling**: Low cost, manageable risk.
+- **Automated Blue-Green**: Zero downtime, high cost.
+- **Progressive Delivery (Canary)**: Lowest risk, highest engineering maturity.
+
+### See Also
+
+- [Service Mesh](09-Infrastructure/04-Service-Mesh.md) - The infrastructure needed for advanced Canary.
+- [Infrastructure as Code](09-Infrastructure/03-IaC.md) - Provisioning the environments for deployment.
+- [Domain-Driven Design](01-System-Design/02-Microservices-Architecture.md) - Defining service boundaries for independent deployment.
