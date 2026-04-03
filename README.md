@@ -139,4 +139,8 @@ Each content file contains exactly 8 sections:
 
 ## 📄 License
 
-This knowledge base is provided for educational purposes.
+This knowledge base is provided for educational purposes. Free to use, I dont care what you do with it.
+
+## ⚠️ About the Content & Disclaimer
+
+The content of this knowledge base was almost fully generated using my other project, br.ai.n, using only qwen3.5-27b-claude-4.6-opus-reasoning-distilled and then manually updating the content with Gemini 3.1 Pro. It serves as a high-level guide and summary of software development concepts. Because the content is mostly an AI-generated synthesis of its training data, there are no direct source citations. Critical technical details should always be verified from the official documentation of the respective technology. All content is eventually verified to be truthful by a human. Please report any inconsistencies you find!
