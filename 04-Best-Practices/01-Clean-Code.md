@@ -113,24 +113,21 @@ function proc(c, a, b) {
 
 ### After: Clean Code
 ```javascript
-const TAX_RATE_A = 0.10;
-const TAX_RATE_B = 0.15;
-
-function calculateTotalWithTax(transactions, rateA, rateB) {
-    const taxedAmounts = transactions.map(applyTaxRate);
-    return taxedAmounts.reduce(sumAmounts, 0);
+function calculateTotalTax(transactions, taxRateA, taxRateB) {
+    return transactions.reduce((totalTax, transaction) => {
+        const taxForTransaction = calculateTax(transaction, taxRateA, taxRateB);
+        return totalTax + taxForTransaction;
+    }, 0);
 }
 
-function applyTaxRate(transaction) {
-    const rate = transaction.type === 'A' ? TAX_RATE_A : TAX_RATE_B;
-    return {
-        ...transaction,
-        taxedAmount: transaction.value * (1 + rate)
-    };
-}
-
-function sumAmounts(total, transaction) {
-    return total + transaction.taxedAmount;
+function calculateTax(transaction, rateA, rateB) {
+    if (transaction.type === 'A') {
+        return transaction.value * rateA;
+    }
+    if (transaction.type === 'B') {
+        return transaction.value * rateB;
+    }
+    return 0;
 }
 ```
 

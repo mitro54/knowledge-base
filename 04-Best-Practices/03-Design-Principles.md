@@ -51,19 +51,42 @@ Simplicity should be a primary goal; complexity should be avoided unless necessa
 
 ```javascript
 // ❌ Violates KISS - Overly complex
-function calculateDiscount(price, customerType, date, quantity, promotionCode) {
+function calculateDiscountedPrice(price, customerType, date, quantity, promotionCode) {
     const baseDiscount = customerType === 'VIP' ? 0.1 : 0.05;
     const seasonalMultiplier = isHolidaySeason(date) ? 1.5 : 1.0;
     const bulkDiscount = quantity > 10 ? 0.02 * Math.log(quantity) : 0;
     const promoDiscount = promotionCodes[promotionCode]?.discount || 0;
-    return Math.min(0.5, baseDiscount * seasonalMultiplier + bulkDiscount + promoDiscount);
+    
+    const totalDiscountRate = Math.min(0.5, baseDiscount * seasonalMultiplier + bulkDiscount + promoDiscount);
+    return price * (1 - totalDiscountRate); // Palauttaa lopullisen hinnan
 }
 
-// ✅ Follows KISS - Simple and clear
-function calculateDiscount(price, customerType, quantity) {
-    let discount = customerType === 'VIP' ? 0.1 : 0.05;
-    if (quantity > 10) discount += 0.02;
-    return Math.min(0.5, discount);
+// ✅ Follows KISS & SRP - Complex logic is broken down into simple, focused functions
+function calculateDiscountedPrice(price, customerType, date, quantity, promoCode) {
+    let discountRate = getBaseDiscount(customerType);
+    discountRate *= getSeasonalMultiplier(date);
+    discountRate += getBulkDiscount(quantity);
+    discountRate += getPromoDiscount(promoCode);
+    
+    const finalDiscountRate = Math.min(0.5, discountRate);
+    return price * (1 - finalDiscountRate);
+}
+
+// Each individual helper function is now incredibly simple (KISS)
+function getBaseDiscount(customerType) {
+    return customerType === 'VIP' ? 0.1 : 0.05;
+}
+
+function getSeasonalMultiplier(date) {
+    return isHolidaySeason(date) ? 1.5 : 1.0;
+}
+
+function getBulkDiscount(quantity) {
+    return quantity > 10 ? 0.02 * Math.log(quantity) : 0;
+}
+
+function getPromoDiscount(promoCode) {
+    return promotionCodes[promoCode]?.discount || 0;
 }
 ```
 
