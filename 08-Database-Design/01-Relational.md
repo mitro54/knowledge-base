@@ -329,19 +329,22 @@ CREATE TABLE products_with_constraints (
 );
 ```
 
-**4. Using INT AUTO_INCREMENT for Everything**
+**4. Exposing Predictable IDs to Users (IDOR vulnerability)**
 ```sql
--- ANTI-PATTERN: Predictable IDs, security risk
-CREATE TABLE users_predictable (
-    user_id INT AUTO_INCREMENT PRIMARY KEY,  -- Easy to guess
+-- ANTI-PATTERN: Using internal predictable IDs for public APIs
+CREATE TABLE users_vulnerable (
+    user_id INT AUTO_INCREMENT PRIMARY KEY,  -- Predictable, easy to guess
     username VARCHAR(100)
 );
+-- If API is /users/5, attacker will try /users/6
 
--- PATTERN: Use UUIDs or hashes for public-facing IDs
+-- PATTERN: Use internal sequential IDs for fast joins, but UUIDs for public exposure
 CREATE TABLE users_secure (
-    user_id UUID PRIMARY KEY DEFAULT GEN_RANDOM_UUID(),
+    user_id INT AUTO_INCREMENT PRIMARY KEY,          -- Fast, sequential for internal JOINs
+    public_id UUID DEFAULT GEN_RANDOM_UUID() UNIQUE, -- Safe, unguessable for APIs
     username VARCHAR(100)
 );
+-- Internal relations use `user_id`. APIs use `public_id` (/users/a1b2c3d4...).
 ```
 
 ## Examples

@@ -280,4 +280,3 @@ Releasing a new version without having a one-click command to go back.
 - [Semantic Versioning (semver.org)](https://semver.org) - The definitive guide to versioning.
 - [Conventional Commits](https://www.conventionalcommits.org/) - Spec for commit messages that power automated releases.
 - [Keep a Changelog](https://keepachangelog.com/) - Best practices for writing changelogs.
-in CI/CD
